@@ -101,7 +101,7 @@ public:
         pchMessageStart[2] = 0xb4;
         pchMessageStart[3] = 0xe0;
         vAlertPubKey = ParseHex("04db94e84b7bc99965a368efb0a7b7773715ff61d46bbfa27ecc5f30572e9e50191b58b3c53bd6564e1f9b0a0041b6e45d5124516e475fbd85c4245b8f22213141");
-        nDefaultPort = 8333;
+        nDefaultPort = 7333;
         bnProofOfWorkLimit = ~uint256(0) >> 24;
         nSubsidyHalvingInterval = 210000;
         nEnforceBlockUpgradeMajority = 750;
@@ -176,7 +176,7 @@ public:
         pchMessageStart[2] = 0x09;
         pchMessageStart[3] = 0x08;
         vAlertPubKey = ParseHex("04302390343f91cc401d56d68b123028bf52e5fca1939df127f63c6467cdf9c8e2c14b61104cf817d0b780da337893ecc4aaff1309e536162dabbdb45200ca2b0a");
-        nDefaultPort = 18333;
+        nDefaultPort = 17333;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
@@ -250,7 +250,7 @@ public:
         nTargetTimespan = 3 * 60 * 60; //! 3 hours
         nTargetSpacing = 15;
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        nDefaultPort = 18444;
+        nDefaultPort = 17444;
 
         const char* pszTimestamp = "DynamicCoin genesis / Reg test";
         CMutableTransaction txNew;
@@ -298,7 +298,7 @@ public:
     CUnitTestParams() {
         networkID = CBaseChainParams::UNITTEST;
         strNetworkID = "unittest";
-        nDefaultPort = 18445;
+        nDefaultPort = 17445;
         vFixedSeeds.clear(); //! Unit test mode doesn't have any fixed seeds.
         vSeeds.clear();  //! Unit test mode doesn't have any DNS seeds.
 
