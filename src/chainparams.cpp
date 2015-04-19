@@ -136,7 +136,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256("0x2f4b3c5a4ed656b563bf4197ed0b20a32b0cd793740d899e112b09de0ab61cca"));
 
         vFixedSeeds.clear(); //! No seeds for now
-        vSeeds.clear();  //! No seeds for now
+        vSeeds.clear();
+        vSeeds.push_back(CDNSSeedData("dynamiccoin.org", "main.seeds.dynamiccoin.org"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(0);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
@@ -205,7 +206,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256("0x5cf528874737db2abdcfc5be9093b172db4820672c1215e30142dbf1710b8b59"));
 
         vFixedSeeds.clear(); //! No seeds for now
-        vSeeds.clear();  //! No seeds for now
+        vSeeds.clear();
+        vSeeds.push_back(CDNSSeedData("dynamiccoin.org", "test.seeds.dynamiccoin.org"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(111);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
