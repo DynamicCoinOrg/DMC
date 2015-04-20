@@ -2512,10 +2512,15 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     int nHeight = pindexPrev->nHeight+1;
 
     // Check proof of work
-    if ((!Params().SkipProofOfWorkCheck()) &&
-       (block.nBits != GetNextWorkRequired(pindexPrev, &block)))
-        return state.DoS(100, error("%s : incorrect proof of work", __func__),
-                         REJECT_INVALID, "bad-diffbits");
+    if (!Params().SkipProofOfWorkCheck()) {
+        uint256 blockTarget;
+        blockTarget.SetCompact(block.nBits);
+        uint256 nextTarget;
+        nextTarget.SetCompact(GetNextWorkRequired(pindexPrev, &block));
+        if (blockTarget > nextTarget)
+            return state.DoS(100, error("%s : incorrect proof of work", __func__),
+                             REJECT_INVALID, "bad-diffbits");
+    }
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
