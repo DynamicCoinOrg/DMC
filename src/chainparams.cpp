@@ -149,7 +149,7 @@ public:
 
         fRequireRPCPassword = true;
         fMiningRequiresPeers = true;
-        fAllowMinDifficultyBlocks = true;
+        fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
