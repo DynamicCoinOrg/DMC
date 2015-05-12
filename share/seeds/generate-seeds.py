@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # Copyright (c) 2014 Wladmir J. van der Laan
+# Copyright (c) 2015 The DynamicCoin developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''
