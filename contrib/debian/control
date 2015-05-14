@@ -1,8 +1,8 @@
-Source: bitcoin
+Source: dynamiccoin
 Section: utils
 Priority: optional
-Maintainer: Jonas Smedegaard <dr@jones.dk>
-Uploaders: Micah Anderson <micah@debian.org>
+Maintainer: DynamicCoin developers <dev@dynamiccoin.org>
+Uploaders: DynamicCoin developers <dev@dynamiccoin.org>
 Build-Depends: debhelper,
  devscripts,
  automake,
@@ -22,9 +22,9 @@ Build-Depends: debhelper,
  libqrencode-dev,
  libprotobuf-dev, protobuf-compiler
 Standards-Version: 3.9.2
-Homepage: http://www.bitcoin.org/
-Vcs-Git: git://github.com/bitcoin/bitcoin.git
-Vcs-Browser: http://github.com/bitcoin/bitcoin
+Homepage: http://www.dynamiccoin.org/
+Vcs-Git: git://github.com/DynamicCoinOrg/DMC.git
+Vcs-Browser: http://github.com/DynamicCoinOrg/DMC
 
 Package: bitcoind
 Architecture: any
@@ -39,10 +39,10 @@ Description: peer-to-peer network based digital currency - daemon
  Full transaction history is stored locally at each client.  This
  requires 20+ GB of space, slowly growing.
  .
- This package provides the daemon, bitcoind, and the CLI tool
- bitcoin-cli to interact with the daemon.
+ This package provides the daemon, dynamiccoind, and the CLI tool
+ dynamiccoin-cli to interact with the daemon.
 
-Package: bitcoin-qt
+Package: dynamiccoin-qt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - Qt GUI
@@ -55,4 +55,4 @@ Description: peer-to-peer network based digital currency - Qt GUI
  Full transaction history is stored locally at each client.  This
  requires 20+ GB of space, slowly growing.
  .
- This package provides Bitcoin-Qt, a GUI for Bitcoin based on Qt.
+ This package provides DynamicCoin-Qt, a GUI for DynamicCoin based on Qt.

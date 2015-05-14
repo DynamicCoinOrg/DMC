@@ -1,4 +1,4 @@
-The following is a list of assets used in the bitcoin source and their proper attribution.
+The following is a list of assets used in the dynamiccoin source and their proper attribution.
 
 [Wladimir van der Laan](https://github.com/laanwj)
 -----------------------
@@ -89,15 +89,15 @@ Everaldo (Everaldo Coelho)
 ### Assets Used
 	src/qt/res/icons/debugwindow.png
 
-Jonas Schnelli
+DynamicCoin developers
 -----------------------
 
 ### Info
-* Designer: Jonas Schnelli (based on the original bitcoin logo from Bitboy)
+* Designer: DynamicCoin developers
 * License: MIT
 
 ### Assets Used
-	src/qt/res/icons/bitcoin.icns, src/qt/res/src/bitcoin.svg,
-	src/qt/res/src/bitcoin.ico, src/qt/res/src/bitcoin.png,
-	src/qt/res/src/bitcoin_testnet.png, docs/bitcoin_logo_doxygen.png,
+	src/qt/res/icons/dynamiccoin.icns, src/qt/res/src/dynamiccoin.svg,
+	src/qt/res/src/dynamiccoin.ico, src/qt/res/src/dynamiccoin.png,
+	src/qt/res/src/dynamiccoin_testnet.png, docs/dynamiccoin_logo_doxygen.png,
 	src/qt/res/images/splash.png, src/qt/res/images/splash_testnet.png

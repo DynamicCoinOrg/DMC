@@ -6,7 +6,7 @@
 #include "ui_coincontroldialog.h"
 
 #include "addresstablemodel.h"
-#include "bitcoinunits.h"
+#include "dynamiccoinunits.h"
 #include "guiutil.h"
 #include "init.h"
 #include "optionsmodel.h"
