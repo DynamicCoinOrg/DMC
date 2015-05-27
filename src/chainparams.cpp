@@ -138,7 +138,7 @@ public:
 
         vFixedSeeds.clear(); //! No seeds for now
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("dynamiccoin.org", "main.seeds.dynamiccoin.org"));
+        vSeeds.push_back(CDNSSeedData("dynamiccoin.net", "main.seeds.dynamiccoin.net"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(0);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
@@ -208,7 +208,7 @@ public:
 
         vFixedSeeds.clear(); //! No seeds for now
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("dynamiccoin.org", "test.seeds.dynamiccoin.org"));
+        vSeeds.push_back(CDNSSeedData("dynamiccoin.net", "test.seeds.dynamiccoin.net"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(111);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
