@@ -133,6 +133,8 @@ public:
         genesis.nNonce   = 5987573;
         hashGenesisBlock = genesis.GetHash();
 
+        LogPrintf("%s: coinbaseTx.vin[0].scriptSig=%s\n", std::string(pszTimestamp), txNew.vin[0].scriptSig.ToString());
+
         assert(hashGenesisBlock == uint256("0x0000008b8a462251c714e1533ce9004f4a36e973673e70b99f54994588eae567"));
         assert(genesis.hashMerkleRoot == uint256("0x2f4b3c5a4ed656b563bf4197ed0b20a32b0cd793740d899e112b09de0ab61cca"));
 
@@ -203,6 +205,8 @@ public:
         genesis.nNonce   = 6195114;
         hashGenesisBlock = genesis.GetHash();
 
+        LogPrintf("%s: coinbaseTx.vin[0].scriptSig=%s\n", std::string(pszTimestamp), txNew.vin[0].scriptSig.ToString());
+
         assert(hashGenesisBlock == uint256("0x000000c71f7f1f6bb21f4b834b3cdb22bf7bc289b093ad2136b0c2b5f9d3bc80"));
         assert(genesis.hashMerkleRoot == uint256("0x5cf528874737db2abdcfc5be9093b172db4820672c1215e30142dbf1710b8b59"));
 
@@ -272,6 +276,8 @@ public:
         genesis.nNonce   = 48961;
         hashGenesisBlock = genesis.GetHash();
 
+        LogPrintf("%s: coinbaseTx.vin[0].scriptSig=%s\n", std::string(pszTimestamp), txNew.vin[0].scriptSig.ToString());
+
         assert(hashGenesisBlock == uint256("0x000079f17b32013353791d669236ea05415ce722dcb4a1bb3c0efeb3e4740200"));
         assert(genesis.hashMerkleRoot == uint256("0xe5cd902c5c1187e9e15a89b8a947c25c610436154c1542218d22bde80ee1ff9f"));
 
@@ -321,6 +327,8 @@ public:
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 6505914;
         hashGenesisBlock = genesis.GetHash();
+
+        LogPrintf("%s: coinbaseTx.vin[0].scriptSig=%s\n", std::string(pszTimestamp), txNew.vin[0].scriptSig.ToString());
 
         assert(hashGenesisBlock == uint256("0x000000943d5dd598d7b49dd709db84c9c7bcdd37e4151ec7830d3877eb4b9ca5"));
         assert(genesis.hashMerkleRoot == uint256("0x453ea46287edbc1299c004dde772c676fd95c848cc794b9fa302cdc84bd1a176"));
