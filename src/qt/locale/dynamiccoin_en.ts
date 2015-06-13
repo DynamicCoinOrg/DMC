@@ -284,7 +284,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>DynamicCoinGUI</name>
     <message>
         <location filename="../dynamiccoingui.cpp" line="+103"/>
         <source>DynamicCoin Core</source>
@@ -2953,7 +2953,7 @@ Address: %4
     </message>
     <message>
         <location line="+2"/>
-        <source>The Bitcoin Core developers</source>
+        <source>The DynamicCoin Core developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3960,7 +3960,7 @@ for example: alertnotify=echo %%s | mail -s &quot;DynamicCoin Alert&quot; admin@
     </message>
     <message>
         <location line="+1"/>
-        <source>Copyright (C) 2009-%i The Bitcoin Core Developers</source>
+        <source>Copyright (C) 2009-%i The DynamicCoin Core Developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -136,7 +136,7 @@
         <translation>Пацвердзіце шыфраванне гаманца</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR DYNAMICCOINS&lt;/b&gt;!</source>
         <translation>Увага: калі вы зашыфруеце свой гаманец і страціце парольную фразу, то &lt;b&gt;СТРАЦІЦЕ ЎСЕ СВАЕ БІТКОЙНЫ&lt;/b&gt;!</translation>
     </message>
     <message>
@@ -152,8 +152,8 @@
         <translation>Гаманец зашыфраваны</translation>
     </message>
     <message>
-        <source>Bitcoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
-        <translation>Bitcoin зачыняецца дзеля завяршэння працэсса шыфравання. Памятайце, што шыфраванне гаманца цалкам абараняе вашыя сродкі ад скрадання шкоднымі праграмамі якія могуць пранікнуць у ваш камп'ютар.</translation>
+        <source>DynamicCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your dynamiccoins from being stolen by malware infecting your computer.</source>
+        <translation>DynamicCoin зачыняецца дзеля завяршэння працэсса шыфравання. Памятайце, што шыфраванне гаманца цалкам абараняе вашыя сродкі ад скрадання шкоднымі праграмамі якія могуць пранікнуць у ваш камп'ютар.</translation>
     </message>
     <message>
         <source>Wallet encryption failed</source>
@@ -185,7 +185,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>DynamicCoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>Падпісаць паведамленне...</translation>
@@ -291,8 +291,8 @@
         <translation>Дапамога</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Bitcoin network</source>
-        <translation><numerusform>%n актыўнае злучэнне з Bitcoin-сецівам</numerusform><numerusform>%n актыўных злучэнняў з Bitcoin-сецівам</numerusform></translation>
+        <source>%n active connection(s) to DynamicCoin network</source>
+        <translation><numerusform>%n актыўнае злучэнне з DynamicCoin-сецівам</numerusform><numerusform>%n актыўных злучэнняў з DynamicCoin-сецівам</numerusform></translation>
     </message>
     <message>
         <source>Error</source>
@@ -430,8 +430,8 @@ Address: %4
         <translation>(%1-біт)</translation>
     </message>
     <message>
-        <source>About Bitcoin Core</source>
-        <translation>Аб Bitcoin Core</translation>
+        <source>About DynamicCoin Core</source>
+        <translation>Аб DynamicCoin Core</translation>
     </message>
     <message>
         <source>Usage:</source>
@@ -621,8 +621,8 @@ Address: %4
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>The Bitcoin Core developers</source>
-        <translation>Распрацоўнікі Bitcoin Core</translation>
+        <source>The DynamicCoin Core developers</source>
+        <translation>Распрацоўнікі DynamicCoin Core</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -889,7 +889,7 @@ Address: %4
     </message>
     </context>
 <context>
-    <name>bitcoin-core</name>
+    <name>dynamiccoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Опцыі:</translation>

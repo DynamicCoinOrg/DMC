@@ -1,4 +1,4 @@
-DynamicCoin Core 0.10.1
+DynamicCoin Core 0.10.2
 =====================
 
 Setup

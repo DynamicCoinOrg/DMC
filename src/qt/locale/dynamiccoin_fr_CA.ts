@@ -65,7 +65,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>DynamicCoinGUI</name>
     </context>
 <context>
     <name>ClientModel</name>
