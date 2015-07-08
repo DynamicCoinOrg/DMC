@@ -17,8 +17,9 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-    const uint256 nProofOfWorkLimit = Params().ProofOfWorkLimit();
-    const unsigned int nProofOfWorkLimitNBits = nProofOfWorkLimit.GetCompact();
+    const unsigned int nProofOfWorkLimitNBits = Params().ProofOfWorkLimit().GetCompact();
+    uint256 nProofOfWorkLimit;
+    nProofOfWorkLimit.SetCompact(nProofOfWorkLimitNBits);
 
     // Genesis block
     if (pindexLast == NULL) {
@@ -64,8 +65,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 //    static_assert(2 * diff_timestamp_outlier_cutoff <= diff_window - 2, "Cut length is too large");
     const int64_t timestamp_core = diff_window - 2 * diff_timestamp_outlier_cutoff;
     if (length > timestamp_core) {
-        cutoff_begin = (length - timestamp_core + 1) / 2;
-        cutoff_end   = cutoff_begin + timestamp_core;
+        cutoff_end   = (length - timestamp_core + 1) / 2;
+        cutoff_begin = cutoff_end + timestamp_core;
     }
     assert(/*cutoff_begin >= 0 &&*/ cutoff_end + 2 <= cutoff_begin && cutoff_begin <= length);
 
@@ -94,8 +95,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (bnNewHashes <= GetNBitsHashes(nProofOfWorkLimitNBits)) {
         bnNew = nProofOfWorkLimit;
     } else {
-        uint256 powPerHash(nProofOfWorkLimit / GetNBitsHashes(nProofOfWorkLimitNBits));
-        bnNew = bnNewHashes * powPerHash - 1;
+        bnNew = ~uint256(0) / bnNewHashes - 1;
     }
 
     /// debug print
