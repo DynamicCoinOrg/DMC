@@ -67,7 +67,7 @@ static const Checkpoints::CCheckpointData data = {
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
-        ( 0, uint256("0x000000ad85bc454622d3aff4842ef8f6f7e510a4c5f219c509ca701cac91e34e"))
+        ( 0, uint256("0x0000008946caf55a2d30cde53852cf23c82ead9116b2af84b896ae79b3e40282"))
         ;
 static const Checkpoints::CCheckpointData dataTestnet = {
         &mapCheckpointsTestnet,
@@ -200,14 +200,14 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 3;
-        genesis.nTime    = 153469708;
+        genesis.nTime    = 1436316222;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce   = 19102285;
+        genesis.nNonce   = 42228550;
         hashGenesisBlock = genesis.GetHash();
 
         LogPrintf("%s: coinbaseTx.vin[0].scriptSig=%s\n", std::string(pszTimestamp), txNew.vin[0].scriptSig.ToString());
 
-        assert(hashGenesisBlock == uint256("0x000000ad85bc454622d3aff4842ef8f6f7e510a4c5f219c509ca701cac91e34e"));
+        assert(hashGenesisBlock == uint256("0x0000008946caf55a2d30cde53852cf23c82ead9116b2af84b896ae79b3e40282"));
         assert(genesis.hashMerkleRoot == uint256("0x5cf528874737db2abdcfc5be9093b172db4820672c1215e30142dbf1710b8b59"));
 
         vFixedSeeds.clear(); //! No seeds for now
