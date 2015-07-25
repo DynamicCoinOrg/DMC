@@ -1238,14 +1238,18 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 {
     CAmount nSubsidy = 1 * COIN;
 
-    const int kFullRewardZone       = 128000;
-    const int kFullReward           = 65535;
-    const int kDecreasingRewardZone = kFullRewardZone + 1 + kFullReward;
+    if (Params().NetworkID() == CBaseChainParams::MAIN) {
+        const int kFullRewardZone       = 128000;
+        const int kFullReward           = 65535;
+        const int kDecreasingRewardZone = kFullRewardZone + 1 + kFullReward;
 
-    if (nHeight > 0 && nHeight <= kFullRewardZone) {
-        nSubsidy = kFullReward * COIN;
-    } else if (nHeight > kFullRewardZone && nHeight < kDecreasingRewardZone) {
-        nSubsidy = (kDecreasingRewardZone - nHeight) * COIN;
+        if (nHeight > 0 && nHeight <= kFullRewardZone) {
+            nSubsidy = kFullReward * COIN;
+        } else if (nHeight > kFullRewardZone && nHeight < kDecreasingRewardZone) {
+            nSubsidy = (kDecreasingRewardZone - nHeight) * COIN;
+        }
+    } else {
+        nSubsidy = 1024 * COIN;
     }
 
     return nSubsidy + nFees;
