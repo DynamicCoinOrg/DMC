@@ -55,7 +55,7 @@ static void convertSeed6(std::vector<CAddress> &vSeedsOut, const SeedSpec6 *data
  */
 static Checkpoints::MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
-        ( 0, uint256("0x0000008b8a462251c714e1533ce9004f4a36e973673e70b99f54994588eae567"))
+        ( 0, uint256("0x000000152106c2bd4678859ad548da538e2ca0a3ea15dc7c44b0c8bdd8eb5060"))
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
@@ -120,22 +120,22 @@ public:
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 0 << bnProofOfWorkLimit.GetCompact() << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 1024 * COIN;
+        txNew.vout[0].nValue = 65535 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04d5097dbafdba541ea1e7000f70190a066fe006fdbc807944d51cb6fe3fdab435c1c342b72fc7b4b9b34e4809e24a9f988b0039f27b62ef7ac298ebd4350c13f2") << OP_CHECKSIG;
         genesis.vtx.resize(1);
         genesis.vtx[0] = txNew;
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 3;
-        genesis.nTime    = 1429025136;
+        genesis.nTime    = 1438828878;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce   = 5987573;
+        genesis.nNonce   = 20475014;
         hashGenesisBlock = genesis.GetHash();
 
         LogPrintf("%s: coinbaseTx.vin[0].scriptSig=%s\n", std::string(pszTimestamp), txNew.vin[0].scriptSig.ToString());
 
-        assert(hashGenesisBlock == uint256("0x0000008b8a462251c714e1533ce9004f4a36e973673e70b99f54994588eae567"));
-        assert(genesis.hashMerkleRoot == uint256("0x2f4b3c5a4ed656b563bf4197ed0b20a32b0cd793740d899e112b09de0ab61cca"));
+        assert(hashGenesisBlock == uint256("0x000000152106c2bd4678859ad548da538e2ca0a3ea15dc7c44b0c8bdd8eb5060"));
+        assert(genesis.hashMerkleRoot == uint256("0xd3cdfb0999833b2a7f146b1f269512b2c87ba4c54cad40fabbe1cfaf77da9e3a"));
 
         vFixedSeeds.clear(); //! No seeds for now
         vSeeds.clear();
