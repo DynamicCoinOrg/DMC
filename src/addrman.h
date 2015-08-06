@@ -128,10 +128,10 @@ public:
  */
 
 //! total number of buckets for tried addresses
-#define ADDRMAN_TRIED_BUCKET_COUNT 256
+#define ADDRMAN_TRIED_BUCKET_COUNT 64
 
 //! total number of buckets for new addresses
-#define ADDRMAN_NEW_BUCKET_COUNT 1024
+#define ADDRMAN_NEW_BUCKET_COUNT 512
 
 //! maximum allowed number of entries in buckets for new and tried addresses
 #define ADDRMAN_BUCKET_SIZE 64
