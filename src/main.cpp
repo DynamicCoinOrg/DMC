@@ -2875,7 +2875,7 @@ bool static LoadBlockIndexDB()
 
     boost::this_thread::interruption_point();
 
-    // Calculate nChainWork
+    // Calculate nChainWork, nChainTx, nChainReward
     vector<pair<int, CBlockIndex*> > vSortedByHeight;
     vSortedByHeight.reserve(mapBlockIndex.size());
     BOOST_FOREACH(const PAIRTYPE(uint256, CBlockIndex*)& item, mapBlockIndex)
@@ -2888,6 +2888,7 @@ bool static LoadBlockIndexDB()
     {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
+        pindex->nChainReward = (pindex->pprev ? pindex->pprev->nChainReward : 0) + 0 /* TODO: get coinbase tx output value*/;
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (pindex->pprev) {
                 if (pindex->pprev->nChainTx) {

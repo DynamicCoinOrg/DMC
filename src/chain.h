@@ -128,6 +128,9 @@ public:
     //! Change to 64-bit type when necessary; won't happen before 2030
     unsigned int nChainTx;
 
+    //! (memory only) Total block reward in the chain up to and including this block
+    uint256 nChainReward;
+
     //! Verification status of this block. See enum BlockStatus
     unsigned int nStatus;
 
