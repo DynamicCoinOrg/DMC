@@ -432,7 +432,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QGraphicsView" name="graphicsView">
+           <widget class="QLabel" name="graphicsView">
             <property name="minimumSize">
              <size>
               <width>128</width>
@@ -450,6 +450,12 @@
             </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="../dynamiccoin.qrc">:/icons/dynamiccoin</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -774,6 +780,8 @@
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../dynamiccoin.qrc"/>
+ </resources>
  <connections/>
 </ui>
