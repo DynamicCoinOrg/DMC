@@ -43,7 +43,7 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
 
     // This timer will be fired repeatedly to update the balance
     pollTimer = new QTimer(this);
-    connect(pollTimer, SIGNAL(timeout()), this, SLOT(pollBalanceChanged()));
+    connect(pollTimer, SIGNAL(timeout()), this, SLOT(pollInfoChanged()));
     pollTimer->start(MODEL_UPDATE_DELAY);
 
     subscribeToCoreSignals();
@@ -101,6 +101,31 @@ CAmount WalletModel::getWatchImmatureBalance() const
     return wallet->GetImmatureWatchOnlyBalance();
 }
 
+CAmount WalletModel::getBlockReward() const
+{
+    return wallet->GetBlockReward();
+}
+
+CAmount WalletModel::getCoinPrice() const
+{
+    return wallet->GetCoinPrice();
+}
+
+CAmount WalletModel::getTargetPrice() const
+{
+    return wallet->GetTargetPrice();
+}
+
+CAmount WalletModel::getTotalCoins() const
+{
+    return wallet->GetTotalCoins();
+}
+
+CAmount WalletModel::getMarketCap() const
+{
+    return wallet->GetMarketCap();
+}
+
 void WalletModel::updateStatus()
 {
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
@@ -109,7 +134,7 @@ void WalletModel::updateStatus()
         emit encryptionStatusChanged(newEncryptionStatus);
 }
 
-void WalletModel::pollBalanceChanged()
+void WalletModel::pollInfoChanged()
 {
     // Get required locks upfront. This avoids the GUI from getting stuck on
     // periodical polls if the core is holding the locks for a longer time -
@@ -129,6 +154,7 @@ void WalletModel::pollBalanceChanged()
         cachedNumBlocks = chainActive.Height();
 
         checkBalanceChanged();
+        checkDMCInfoChanged();
         if(transactionTableModel)
             transactionTableModel->updateConfirmations();
     }
@@ -161,6 +187,14 @@ void WalletModel::checkBalanceChanged()
         emit balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance,
                             newWatchOnlyBalance, newWatchUnconfBalance, newWatchImmatureBalance);
     }
+}
+
+void WalletModel::checkDMCInfoChanged()
+{
+    // TODO: check with cached values
+    
+    emit dmcInfoChanged(getBlockReward(), getCoinPrice(), getTargetPrice(),
+                        getTotalCoins(), getMarketCap());
 }
 
 void WalletModel::updateTransaction()

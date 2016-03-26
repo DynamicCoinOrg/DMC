@@ -1149,6 +1149,31 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
     return nTotal;
 }
 
+CAmount CWallet::GetBlockReward() const
+{
+    return chainActive.Tip()->nReward;
+}
+
+CAmount CWallet::GetCoinPrice() const
+{
+    return 1000 / 10;   // STUB: 0.1USD
+}
+
+CAmount CWallet::GetTargetPrice() const
+{
+    return 1000;    // STUB: 1USD
+}
+
+CAmount CWallet::GetTotalCoins() const
+{
+    return chainActive.Tip()->nChainReward;
+}
+
+CAmount CWallet::GetMarketCap() const
+{
+    return GetTotalCoins() * GetCoinPrice();
+}
+
 /**
  * populate vCoins with vector of available COutputs.
  */

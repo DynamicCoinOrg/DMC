@@ -189,6 +189,25 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         ui->labelWatchImmature->hide();
 }
 
+void OverviewPage::setDMCInfo(const CAmount& blockReward, const CAmount& coinPrice,
+                              const CAmount& targetPrice, const CAmount& totalCoins,
+                              const CAmount& marketCap)
+{
+    int unit = walletModel->getOptionsModel()->getDisplayUnit();
+
+    currentBlockReward = blockReward;
+    currentCoinPrice = coinPrice;
+    currentTargetPrice = targetPrice;
+    currentTotalCoins = totalCoins;
+    currentMarketCap = marketCap;
+
+    ui->labelBlockReward->setText(BitcoinUnits::formatWithUnit(unit, blockReward, false, BitcoinUnits::separatorAlways));
+    ui->labelCoinPrice->setText(USDUnits::formatWithUnit(unit, coinPrice, false, USDUnits::separatorAlways));
+    ui->labelTargetPrice->setText(USDUnits::formatWithUnit(unit, targetPrice, false, USDUnits::separatorAlways));
+    ui->labelTotalCoins->setText(BitcoinUnits::formatWithUnit(unit, totalCoins, false, BitcoinUnits::separatorAlways));
+    ui->labelMarketCap->setText(USDUnits::formatWithUnit(unit, marketCap, false, USDUnits::separatorAlways));
+}
+
 void OverviewPage::setClientModel(ClientModel *model)
 {
     this->clientModel = model;
@@ -226,6 +245,10 @@ void OverviewPage::setWalletModel(WalletModel *model)
 
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
+        
+        setDMCInfo(model->getBlockReward(), model->getCoinPrice(), model->getTargetPrice(),
+                   model->getTotalCoins(), model->getMarketCap());
+        connect(model, SIGNAL(dmcInfoChanged(CAmount, CAmount, CAmount, CAmount, CAmount)), this, SLOT(setDMCInfo(CAmount, CAmount, CAmount, CAmount, CAmount)));
     }
 
     // update the display unit, to not use the default ("DMC")

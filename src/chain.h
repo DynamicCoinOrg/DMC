@@ -123,10 +123,16 @@ public:
     //! Note: in a potential headers-first mode, this number cannot be relied upon
     unsigned int nTx;
 
+    //! Block reward
+    CAmount nReward;
+
     //! (memory only) Number of transactions in the chain up to and including this block.
     //! This value will be non-zero only if and only if transactions for this block and all its parents are available.
     //! Change to 64-bit type when necessary; won't happen before 2030
     unsigned int nChainTx;
+
+    //! (memory only) Total block reward in the chain up to and including this block
+    CAmount nChainReward;   // TODO: uint256?
 
     //! Verification status of this block. See enum BlockStatus
     unsigned int nStatus;
@@ -151,10 +157,12 @@ public:
         nDataPos = 0;
         nUndoPos = 0;
         nChainWork = 0;
+        nChainReward = 0;
         nTx = 0;
         nChainTx = 0;
         nStatus = 0;
         nSequenceId = 0;
+        nReward = 0;
 
         nVersion       = 0;
         hashMerkleRoot = 0;

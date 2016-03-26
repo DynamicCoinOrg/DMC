@@ -38,6 +38,10 @@ public:
 public slots:
     void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+    
+    void setDMCInfo(const CAmount& blockReward, const CAmount& coinPrice,
+                    const CAmount& targetPrice, const CAmount& totalCoins,
+                    const CAmount& marketCap);
 
 signals:
     void transactionClicked(const QModelIndex &index);
@@ -52,6 +56,12 @@ private:
     CAmount currentWatchOnlyBalance;
     CAmount currentWatchUnconfBalance;
     CAmount currentWatchImmatureBalance;
+
+    CAmount currentBlockReward;
+    CAmount currentCoinPrice;
+    CAmount currentTargetPrice;
+    CAmount currentTotalCoins;
+    CAmount currentMarketCap;
 
     TxViewDelegate *txdelegate;
     TransactionFilterProxy *filter;

@@ -134,6 +134,12 @@ public:
     CAmount getWatchUnconfirmedBalance() const;
     CAmount getWatchImmatureBalance() const;
     EncryptionStatus getEncryptionStatus() const;
+    
+    CAmount getBlockReward() const;
+    CAmount getCoinPrice() const;
+    CAmount getTargetPrice() const;
+    CAmount getTotalCoins() const;
+    CAmount getMarketCap() const;
 
     // Check address for validity
     bool validateAddress(const QString &address);
@@ -223,11 +229,17 @@ private:
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
     void checkBalanceChanged();
+    void checkDMCInfoChanged();
 
 signals:
     // Signal that balance in wallet changed
     void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
                         const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+
+    // 
+    void dmcInfoChanged(const CAmount& blockReward, const CAmount& coinPrice,
+                        const CAmount& targetPrice, const CAmount& totalCoins,
+                        const CAmount& marketCap);
 
     // Encryption status of wallet changed
     void encryptionStatusChanged(int status);
@@ -259,7 +271,7 @@ public slots:
     /* Watch-only added */
     void updateWatchOnlyFlag(bool fHaveWatchonly);
     /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
-    void pollBalanceChanged();
+    void pollInfoChanged();
 };
 
 #endif // BITCOIN_QT_WALLETMODEL_H

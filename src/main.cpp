@@ -1255,6 +1255,21 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
     return nSubsidy + nFees;
 }
 
+// get block reward from the block which was already verified
+CAmount GetBlockReward(const CBlockIndex& block)
+{
+    /* TODO: get coinbase tx output value*/
+    CAmount totalOut = 0;
+    /* TODO: get fee value for a block */
+    CAmount totalFees = 0;
+
+    // NOTE: this is the invariant and restriction we're introducing here
+    // You obviously can claim more (just like before), but now you can't claim less too.
+//    return totalOut - totalFees;
+    
+    return block.nReward;
+}
+
 bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
@@ -2307,6 +2322,12 @@ CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
         pindexNew->BuildSkip();
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
+
+    // TODO: temporary workaround – remove later
+    // this should be done in a different place, because txs are needed to calculate block reward
+    pindexNew->nReward      = GetBlockValue(pindexNew->nHeight, 0);
+    pindexNew->nChainReward = (pindexNew->pprev ? pindexNew->pprev->nChainReward : 0) + GetBlockReward(*pindexNew);
+
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (pindexBestHeader == NULL || pindexBestHeader->nChainWork < pindexNew->nChainWork)
         pindexBestHeader = pindexNew;
@@ -2889,7 +2910,7 @@ bool static LoadBlockIndexDB()
 
     boost::this_thread::interruption_point();
 
-    // Calculate nChainWork
+    // Calculate nChainWork, nChainTx, nChainReward
     vector<pair<int, CBlockIndex*> > vSortedByHeight;
     vSortedByHeight.reserve(mapBlockIndex.size());
     BOOST_FOREACH(const PAIRTYPE(uint256, CBlockIndex*)& item, mapBlockIndex)
@@ -2902,6 +2923,12 @@ bool static LoadBlockIndexDB()
     {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
+        
+        // TODO: temporary workaround – remove later
+        // this should be done differently, because txs are needed to calculate block reward
+        pindex->nReward      = GetBlockValue(pindex->nHeight, 0);
+        pindex->nChainReward = (pindex->pprev ? pindex->pprev->nChainReward : 0) + GetBlockReward(*pindex);
+
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (pindex->pprev) {
                 if (pindex->pprev->nChainTx) {
