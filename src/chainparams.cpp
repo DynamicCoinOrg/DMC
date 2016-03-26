@@ -192,7 +192,7 @@ public:
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 0 << bnProofOfWorkLimit.GetCompact() << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 65535 * COIN;
+        txNew.vout[0].nValue = 1024 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04d5097dbafdba541ea1e7000f70190a066fe006fdbc807944d51cb6fe3fdab435c1c342b72fc7b4b9b34e4809e24a9f988b0039f27b62ef7ac298ebd4350c13f2") << OP_CHECKSIG;
         genesis.vtx.resize(1);
         genesis.vtx[0] = txNew;
