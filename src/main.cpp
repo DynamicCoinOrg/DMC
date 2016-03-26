@@ -1243,7 +1243,7 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
         const int kFullReward           = 65535;
         const int kDecreasingRewardZone = kFullRewardZone + 1 + kFullReward;
 
-        if (nHeight > 0 && nHeight <= kFullRewardZone) {
+        if (nHeight >= 0 && nHeight <= kFullRewardZone) {
             nSubsidy = kFullReward * COIN;
         } else if (nHeight > kFullRewardZone && nHeight < kDecreasingRewardZone) {
             nSubsidy = (kDecreasingRewardZone - nHeight) * COIN;
