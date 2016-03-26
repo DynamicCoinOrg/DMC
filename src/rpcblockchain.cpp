@@ -89,6 +89,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
     result.push_back(Pair("difficulty", GetDifficulty(blockindex)));
     result.push_back(Pair("chainwork", blockindex->nChainWork.GetHex()));
     result.push_back(Pair("chainreward", blockindex->nChainReward));
+    result.push_back(Pair("reward", blockindex->nReward));
 
     if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
@@ -483,6 +484,7 @@ Value getblockchaininfo(const Array& params, bool fHelp)
     obj.push_back(Pair("verificationprogress",  Checkpoints::GuessVerificationProgress(chainActive.Tip())));
     obj.push_back(Pair("chainwork",             chainActive.Tip()->nChainWork.GetHex()));
     obj.push_back(Pair("chainreward",           chainActive.Tip()->nChainReward));
+    obj.push_back(Pair("reward",                chainActive.Tip()->nReward));
     return obj;
 }
 
