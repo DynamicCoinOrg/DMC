@@ -472,7 +472,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="labelBalance_2">
+             <widget class="QLabel" name="labelBlockReward">
               <property name="font">
                <font>
                 <weight>75</weight>
@@ -504,7 +504,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="labelBalance_4">
+             <widget class="QLabel" name="labelCoinPrice">
               <property name="font">
                <font>
                 <weight>75</weight>
@@ -536,7 +536,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLabel" name="labelBalance_6">
+             <widget class="QLabel" name="labelTargetPrice">
               <property name="font">
                <font>
                 <weight>75</weight>
@@ -581,7 +581,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLabel" name="labelBalance_3">
+             <widget class="QLabel" name="labelTotalCoins">
               <property name="font">
                <font>
                 <weight>75</weight>
@@ -613,7 +613,7 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QLabel" name="labelBalance_5">
+             <widget class="QLabel" name="labelMarketCap">
               <property name="font">
                <font>
                 <weight>75</weight>
