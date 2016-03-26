@@ -1156,12 +1156,12 @@ CAmount CWallet::GetBlockReward() const
 
 CAmount CWallet::GetCoinPrice() const
 {
-    return 1000 / 10;   // STUB: 0.1USD
+    return 10 * USCENT1;   // STUB: 0.1USD
 }
 
 CAmount CWallet::GetTargetPrice() const
 {
-    return 1000;    // STUB: 1USD
+    return 1 * USD1;    // STUB: 1USD
 }
 
 CAmount CWallet::GetTotalCoins() const
@@ -1171,7 +1171,7 @@ CAmount CWallet::GetTotalCoins() const
 
 CAmount CWallet::GetMarketCap() const
 {
-    return GetTotalCoins() * GetCoinPrice();
+    return (GetTotalCoins() / COIN) * GetCoinPrice();
 }
 
 /**

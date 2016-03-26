@@ -18,6 +18,9 @@ typedef int64_t CAmount;
 static const CAmount COIN = 100000000;
 static const CAmount CENT = 1000000;
 
+static const CAmount USD1    = 1000;
+static const CAmount USCENT1 = 10;
+
 /** No amount larger than this (in satoshi) is valid */
 static const CAmount MAX_MONEY = std::numeric_limits<CAmount>::max();
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
