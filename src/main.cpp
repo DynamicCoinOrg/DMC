@@ -20,6 +20,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "GrsApi.h"
 
 #include <sstream>
 
@@ -54,6 +55,8 @@ bool fTxIndex = false;
 bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 unsigned int nCoinCacheSize = 5000;
+
+CGrsApi *pGrsApi = NULL;
 
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */

@@ -94,6 +94,7 @@ DYNAMICCOIN_CORE_H = \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
+  GrsApi.h \
   hash.h \
   init.h \
   key.h \
@@ -166,6 +167,7 @@ libdynamiccoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  GrsApi.cpp \
   init.cpp \
   leveldbwrapper.cpp \
   main.cpp \

@@ -26,6 +26,7 @@
 #include "txmempool.h"
 #include "uint256.h"
 #include "undo.h"
+#include "GrsApi.h"
 
 #include <algorithm>
 #include <exception>
@@ -132,6 +133,8 @@ extern CFeeRate minRelayTxFee;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
+
+extern CGrsApi *pGrsApi;
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;

@@ -1156,12 +1156,12 @@ CAmount CWallet::GetBlockReward() const
 
 CAmount CWallet::GetCoinPrice() const
 {
-    return 10 * USCENT1;   // STUB: 0.1USD, TODO(dmc): get actual coin price
+    return pGrsApi->GetLatestPrice();
 }
 
 CAmount CWallet::GetTargetPrice() const
 {
-    return 1 * USD1;    // STUB: 1USD, TODO(dmc): get actual target price
+    return pGrsApi->GetLatestTargetPrice();
 }
 
 CAmount CWallet::GetTotalCoins() const
