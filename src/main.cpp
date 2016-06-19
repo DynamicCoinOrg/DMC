@@ -56,7 +56,7 @@ bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 unsigned int nCoinCacheSize = 5000;
 
-CGrsApi *pGrsApi = NULL;
+CDmcSystem *pDmcSystem = NULL;
 
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */

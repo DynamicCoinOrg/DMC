@@ -1151,27 +1151,27 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
 
 CAmount CWallet::GetBlockReward() const
 {
-    return chainActive.Tip()->nReward;
+    return pDmcSystem->GetBlockReward();
 }
 
 CAmount CWallet::GetCoinPrice() const
 {
-    return pGrsApi->GetLatestPrice();
+    return pDmcSystem->GetLatestPrice();
 }
 
 CAmount CWallet::GetTargetPrice() const
 {
-    return pGrsApi->GetLatestTargetPrice();
+    return pDmcSystem->GetLatestTargetPrice();
 }
 
 CAmount CWallet::GetTotalCoins() const
 {
-    return chainActive.Tip()->nChainReward;
+    return pDmcSystem->GetTotalCoins();
 }
 
 CAmount CWallet::GetMarketCap() const
 {
-    return (GetTotalCoins() / COIN) * GetCoinPrice();
+    return pDmcSystem->GetMarketCap();
 }
 
 /**

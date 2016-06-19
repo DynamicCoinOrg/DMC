@@ -954,7 +954,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     BOOST_FOREACH(string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
 
-    pGrsApi = new CGrsApi();
+    pDmcSystem = new CDmcSystem("http://grs.dynamiccoin.io:3000/api/v1.0/");
 
     // ********************************************************* Step 7: load block chain
 
