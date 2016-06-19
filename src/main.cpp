@@ -1258,21 +1258,6 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
     return nSubsidy + nFees;
 }
 
-// get block reward from the block which was already verified
-CAmount GetBlockReward(const CBlockIndex& block)
-{
-    /* TODO: get coinbase tx output value*/
-    CAmount totalOut = 0;
-    /* TODO: get fee value for a block */
-    CAmount totalFees = 0;
-
-    // NOTE: this is the invariant and restriction we're introducing here
-    // You obviously can claim more (just like before), but now you can't claim less too.
-//    return totalOut - totalFees;
-    
-    return block.nReward;
-}
-
 bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
