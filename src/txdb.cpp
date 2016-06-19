@@ -211,6 +211,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nNonce         = diskindex.nNonce;
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
+                pindexNew->nReward        = diskindex.nReward;
 
                 if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
                     return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());

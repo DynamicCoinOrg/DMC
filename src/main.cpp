@@ -1793,6 +1793,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                block.vtx[0].GetValueOut(), pDmcSystem->GetBlockReward(pindex) + nFees),
                                REJECT_INVALID, "bad-cb-amount");
 
+    pindex->nReward = block.vtx[0].GetValueOut() - nFees;
+    pindex->nChainReward = pindex->pprev ? pindex->pprev->nChainReward : 0 + pindex->nReward;
+
     if (!control.Wait())
         return state.DoS(100, false);
     int64_t nTime2 = GetTimeMicros(); nTimeVerify += nTime2 - nTimeStart;
@@ -2325,11 +2328,6 @@ CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
         pindexNew->BuildSkip();
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
-
-    // TODO(dmc): temporary workaround – remove later
-    // this should be done in a different place, because txs are needed to calculate block reward
-    pindexNew->nReward      = GetBlockValue(pindexNew->nHeight, 0);
-    pindexNew->nChainReward = (pindexNew->pprev ? pindexNew->pprev->nChainReward : 0) + GetBlockReward(*pindexNew);
 
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (pindexBestHeader == NULL || pindexBestHeader->nChainWork < pindexNew->nChainWork)
@@ -2926,11 +2924,6 @@ bool static LoadBlockIndexDB()
     {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
-        
-        // TODO(dmc): temporary workaround – remove later
-        // this should be done differently, because txs are needed to calculate block reward
-        pindex->nReward      = GetBlockValue(pindex->nHeight, 0);
-        pindex->nChainReward = (pindex->pprev ? pindex->pprev->nChainReward : 0) + GetBlockReward(*pindex);
 
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (pindex->pprev) {
@@ -2940,8 +2933,10 @@ bool static LoadBlockIndexDB()
                     pindex->nChainTx = 0;
                     mapBlocksUnlinked.insert(std::make_pair(pindex->pprev, pindex));
                 }
+                pindex->nChainReward = pindex->pprev->nChainReward + pindex->nReward;
             } else {
                 pindex->nChainTx = pindex->nTx;
+                pindex->nChainReward = pindex->nReward;
             }
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
