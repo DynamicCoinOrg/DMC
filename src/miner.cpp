@@ -319,15 +319,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
+        UpdateTime(pblock, pindexPrev); // DMC: do this before getting reward from DMC
+
         // Compute final coinbase transaction.
-        txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+        txNew.vout[0].nValue = pDmcSystem->GetBlockReward(pblock->nTime) + nFees;
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
 
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
-        UpdateTime(pblock, pindexPrev);
         pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
         pblock->nNonce         = 0;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
@@ -563,13 +564,14 @@ void static BitcoinMiner(CWallet *pwallet)
                 if (pindexPrev != chainActive.Tip())
                     break;
 
-                // Update nTime every few seconds
-                UpdateTime(pblock, pindexPrev);
-                if (Params().AllowMinDifficultyBlocks())
-                {
-                    // Changing pblock->nTime can change work required on testnet:
-                    hashTarget.SetCompact(pblock->nBits);
-                }
+                break;  // DMC: we can't update nTime without breaking the block, so just rebuild it
+//                // Update nTime every few seconds
+//                UpdateTime(pblock, pindexPrev);
+//                if (Params().AllowMinDifficultyBlocks())
+//                {
+//                    // Changing pblock->nTime can change work required on testnet:
+//                    hashTarget.SetCompact(pblock->nBits);
+//                }
             }
         }
     }

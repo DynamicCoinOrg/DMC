@@ -522,7 +522,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
     // Update nTime
-    UpdateTime(pblock, pindexPrev);
+//    UpdateTime(pblock, pindexPrev);   // DMC: this is done in CreateNewBlock (doing it here one more time may potentially break the reward)
     pblock->nNonce = 0;
 
     static const Array aCaps = boost::assign::list_of("proposal");
