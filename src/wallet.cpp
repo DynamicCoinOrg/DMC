@@ -1156,12 +1156,12 @@ CAmount CWallet::GetBlockReward() const
 
 CAmount CWallet::GetCoinPrice() const
 {
-    return pDmcSystem->GetLatestPrice();
+    return pDmcSystem->GetPrice();
 }
 
 CAmount CWallet::GetTargetPrice() const
 {
-    return pDmcSystem->GetLatestTargetPrice();
+    return pDmcSystem->GetTargetPrice();
 }
 
 CAmount CWallet::GetTotalCoins() const

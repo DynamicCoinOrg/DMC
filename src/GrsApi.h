@@ -5,6 +5,8 @@
 #include "chain.h"
 #include <ctime>
 #include <string>
+#include <map>
+#include <utility>
 
 class CGrsApi
 {
@@ -13,8 +15,12 @@ public:
 
     CAmount GetPrice(unsigned int time) const;
     CAmount GetLatestPrice() const;
-
+    
 private:
+
+  typedef std::pair<unsigned int, unsigned int> time_interval_t;
+  std::map<time_interval_t, CAmount> historicalPrices;
+
   const std::string baseApiUrl;
 };
 
@@ -23,7 +29,10 @@ class CDmcSystem
 public:
     CDmcSystem(const std::string& apiUrl);
 
+    CAmount GetPrice() const;
     CAmount GetPrice(unsigned int time) const;
+
+    CAmount GetTargetPrice() const;
     CAmount GetTargetPrice(unsigned int time) const;
 
     CAmount GetBlockReward() const;
@@ -33,11 +42,12 @@ public:
     CAmount GetTotalCoins() const;
     CAmount GetMarketCap() const;
 
-    CAmount GetLatestPrice() const;
-    CAmount GetLatestTargetPrice() const;
-
+protected:
+    CAmount GetTargetPrice(CAmount reward) const;
+    
 private:
     CGrsApi grsApi;
+    const static int switchHeight = 10000000;
 };
 
 
