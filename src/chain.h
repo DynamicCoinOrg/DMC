@@ -97,6 +97,9 @@ class CBlockIndex
 public:
     //! pointer to the hash of the block, if any. memory is owned by this CBlockIndex
     const uint256* phashBlock;
+    
+    //! pointer to the PoW of the block, if any. memory is owned by this CBlockIndex
+    std::shared_ptr<uint256> pPowBlock;
 
     //! pointer to the index of the predecessor of this block
     CBlockIndex* pprev;
@@ -150,6 +153,7 @@ public:
     void SetNull()
     {
         phashBlock = NULL;
+        pPowBlock.reset();
         pprev = NULL;
         pskip = NULL;
         nHeight = 0;
@@ -245,6 +249,11 @@ public:
     uint256 GetBlockHash() const
     {
         return *phashBlock;
+    }
+    
+    uint256 GetBlockPoW() const
+    {
+        return *pPowBlock;
     }
 
     int64_t GetBlockTime() const
@@ -367,6 +376,17 @@ public:
         return block.GetHash();
     }
 
+    uint256 GetBlockPoW() const
+    {
+        CBlockHeader block;
+        block.nVersion        = nVersion;
+        block.hashPrevBlock   = hashPrev;
+        block.hashMerkleRoot  = hashMerkleRoot;
+        block.nTime           = nTime;
+        block.nBits           = nBits;
+        block.nNonce          = nNonce;
+        return block.GetPoW();
+    }
 
     std::string ToString() const
     {

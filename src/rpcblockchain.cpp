@@ -560,6 +560,7 @@ Value getchaintips(const Array& params, bool fHelp)
         Object obj;
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
+        obj.push_back(Pair("pow", block->pPowBlock->GetHex()));
 
         const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));

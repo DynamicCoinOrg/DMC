@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include <boost/thread.hpp>
 
 using namespace std;
@@ -199,7 +201,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
 
                 // Construct block index object
                 CBlockIndex* pindexNew = InsertBlockIndex(diskindex.GetBlockHash());
+                uint256 pow = diskindex.GetBlockPoW();
                 pindexNew->pprev          = InsertBlockIndex(diskindex.hashPrev);
+                pindexNew->pPowBlock      = std::make_shared<uint256>(pow);
                 pindexNew->nHeight        = diskindex.nHeight;
                 pindexNew->nFile          = diskindex.nFile;
                 pindexNew->nDataPos       = diskindex.nDataPos;
@@ -213,7 +217,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nTx            = diskindex.nTx;
                 pindexNew->nReward        = diskindex.nReward;
 
-                if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
+                if (!CheckProofOfWork(pindexNew->GetBlockPoW(), pindexNew->nBits))
                     return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
 
                 pcursor->Next();
