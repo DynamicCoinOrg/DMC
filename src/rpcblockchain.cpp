@@ -61,6 +61,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
 {
     Object result;
     result.push_back(Pair("hash", block.GetHash().GetHex()));
+    result.push_back(Pair("pow", block.GetPoW().GetHex()));
     int confirmations = -1;
     // Only report confirmations if the block is on the main chain
     if (chainActive.Contains(blockindex))
