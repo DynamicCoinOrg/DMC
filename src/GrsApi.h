@@ -47,7 +47,7 @@ protected:
     
 private:
     CGrsApi grsApi;
-    const static int switchHeight = 10000000;
+    const static int liveFeedSwitchHeight = 10000000;
 };
 
 

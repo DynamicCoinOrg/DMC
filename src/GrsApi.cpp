@@ -26,7 +26,7 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
 
 CAmount CDmcSystem::GetPrice() const
 {
-    if (chainActive.Tip()->nHeight >= switchHeight) {
+    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
         return grsApi.GetPrice(chainActive.Tip()->nTime);
     }
     return 10 * USCENT1;   // 0.1USD
@@ -34,7 +34,7 @@ CAmount CDmcSystem::GetPrice() const
 
 CAmount CDmcSystem::GetPrice(unsigned int time) const
 {
-    if (chainActive.Tip()->nHeight >= switchHeight) {
+    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
         return grsApi.GetPrice(time);
     }
     return GetPrice();
@@ -42,7 +42,7 @@ CAmount CDmcSystem::GetPrice(unsigned int time) const
 
 CAmount CDmcSystem::GetTargetPrice() const
 {
-    if (chainActive.Tip()->nHeight >= switchHeight) {
+    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
         const CBlockIndex* pindex = chainActive.Tip();
         return GetTargetPrice(pindex->nReward);
     }
@@ -51,7 +51,7 @@ CAmount CDmcSystem::GetTargetPrice() const
 
 CAmount CDmcSystem::GetTargetPrice(unsigned int time) const
 {
-    if (chainActive.Tip()->nHeight >= switchHeight) {
+    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
         const CBlockIndex* pindex;  // TODO(dmc): get block for time
         return GetTargetPrice(pindex->nReward);
     }
@@ -69,7 +69,7 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 
     int nHeight = pindex->nHeight;
 
-    if (pindex->nHeight >= switchHeight) {
+    if (pindex->nHeight >= liveFeedSwitchHeight) {
         CAmount genesisReward = 65535 * COIN;
         CAmount minReward = 1 * COIN;
         CAmount maxReward = 100000 * COIN;
