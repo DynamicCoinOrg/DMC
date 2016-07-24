@@ -217,6 +217,30 @@ public:
         block.nNonce         = nNonce;
         return block;
     }
+    
+    int16_t GetBtcVersion() const
+    {
+        return nVersion & 65535;
+    }
+    
+    int16_t GetDmcVersion() const
+    {
+        return nVersion & (65535 << 16);
+    }
+    
+    int32_t SetBtcVersion(int16_t v)
+    {
+        int16_t high = GetDmcVersion();
+        nVersion = (high << 16) | v;
+        return nVersion;
+    }
+    
+    int32_t SetDmcVersion(int16_t v)
+    {
+        int16_t low = GetBtcVersion();
+        nVersion = (v << 16) | low;
+        return nVersion;
+    }
 
     uint256 GetBlockHash() const
     {

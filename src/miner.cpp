@@ -390,6 +390,10 @@ bool static ScanHash(const CBlockHeader *pblock, uint32_t& nNonce, uint256 *phas
         // the double-SHA256 state, and compute the result.
         CHash256(hasher).Write((unsigned char*)&nNonce, 4).Finalize((unsigned char*)phash);
 
+        if (pblock->nVersion >= BLOCK_VERSION_1_3) {
+            CHash256().Write((unsigned char*)phash, phash->size()).Finalize((unsigned char*)phash);
+        }
+
         // Return the nonce if the hash has at least some zero bits,
         // caller will check if it has enough to reach the target
         if (((uint16_t*)phash)[15] == 0)
