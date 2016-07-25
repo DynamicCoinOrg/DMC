@@ -91,7 +91,7 @@ int BitcoinUnits::decimals(int unit)
     }
 }
 
-QString BitcoinUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators)
+QString BitcoinUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators, bool omitRemainderIfZero)
 {
     // Note: not using straight sprintf here because we do NOT want
     // localized number formatting.
@@ -118,7 +118,7 @@ QString BitcoinUnits::format(int unit, const CAmount& nIn, bool fPlus, Separator
         quotient_str.insert(0, '-');
     else if (fPlus && n > 0)
         quotient_str.insert(0, '+');
-    return quotient_str + QString(".") + remainder_str;
+    return quotient_str + ((omitRemainderIfZero && remainder == 0) ? QString("") : QString(".") + remainder_str);
 }
 
 
@@ -137,9 +137,9 @@ QString BitcoinUnits::format(int unit, const CAmount& nIn, bool fPlus, Separator
 // Please take care to use formatHtmlWithUnit instead, when
 // appropriate.
 
-QString BitcoinUnits::formatWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
+QString BitcoinUnits::formatWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators, bool omitRemainderIfZero)
 {
-    return format(unit, amount, plussign, separators) + QString(" ") + name(unit);
+    return format(unit, amount, plussign, separators, omitRemainderIfZero) + QString(" ") + name(unit);
 }
 
 QString BitcoinUnits::formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
@@ -306,7 +306,7 @@ int USDUnits::decimals(int unit)
     }
 }
 
-QString USDUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators)
+QString USDUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators, bool omitRemainderIfZero)
 {
     // Note: not using straight sprintf here because we do NOT want
     // localized number formatting.
@@ -333,7 +333,7 @@ QString USDUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyl
         quotient_str.insert(0, '-');
     else if (fPlus && n > 0)
         quotient_str.insert(0, '+');
-    return quotient_str + QString(".") + remainder_str;
+    return quotient_str + ((omitRemainderIfZero && remainder == 0) ? QString("") : QString(".") + remainder_str);
 }
 
 
@@ -352,9 +352,9 @@ QString USDUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyl
 // Please take care to use formatHtmlWithUnit instead, when
 // appropriate.
 
-QString USDUnits::formatWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
+QString USDUnits::formatWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators, bool omitRemainderIfZero)
 {
-    return format(unit, amount, plussign, separators) + QString(" ") + name(unit);
+    return format(unit, amount, plussign, separators, omitRemainderIfZero) + QString(" ") + name(unit);
 }
 
 QString USDUnits::formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)

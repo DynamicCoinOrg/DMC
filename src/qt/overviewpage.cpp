@@ -201,11 +201,11 @@ void OverviewPage::setDMCInfo(const CAmount& blockReward, const CAmount& coinPri
     currentTotalCoins = totalCoins;
     currentMarketCap = marketCap;
 
-    ui->labelBlockReward->setText(BitcoinUnits::formatWithUnit(unit, blockReward, false, BitcoinUnits::separatorAlways));
+    ui->labelBlockReward->setText(BitcoinUnits::formatWithUnit(unit, blockReward, false, BitcoinUnits::separatorAlways, true));
     ui->labelCoinPrice->setText(USDUnits::formatWithUnit(unit, coinPrice, false, USDUnits::separatorAlways));
     ui->labelTargetPrice->setText(USDUnits::formatWithUnit(unit, targetPrice, false, USDUnits::separatorAlways));
-    ui->labelTotalCoins->setText(BitcoinUnits::formatWithUnit(unit, totalCoins, false, BitcoinUnits::separatorAlways));
-    ui->labelMarketCap->setText(USDUnits::formatWithUnit(unit, marketCap, false, USDUnits::separatorAlways));
+    ui->labelTotalCoins->setText(BitcoinUnits::formatWithUnit(unit, totalCoins, false, BitcoinUnits::separatorAlways, true));
+    ui->labelMarketCap->setText(USDUnits::formatWithUnit(unit, marketCap, false, USDUnits::separatorAlways, true));
 }
 
 void OverviewPage::setClientModel(ClientModel *model)
