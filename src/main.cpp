@@ -2562,18 +2562,25 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (pcheckpoint && nHeight < pcheckpoint->nHeight)
         return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
-    // Reject block.nVersion=1 blocks when 95% (75% on testnet) of the network has upgraded:
+    // Reject block.nVersion=0_1 blocks when 95% (75% on testnet) of the network has upgraded:
     if (block.nVersion < BLOCK_VERSION_0_2 && 
         CBlockIndex::IsSuperMajority(BLOCK_VERSION_0_2, pindexPrev, Params().RejectBlockOutdatedMajority()))
     {
-        return state.Invalid(error("%s : rejected nVersion=1 block", __func__),
+        return state.Invalid(error("%s : rejected nVersion=0_1 block", __func__),
                              REJECT_OBSOLETE, "bad-version");
     }
 
-    // Reject block.nVersion=2 blocks when 95% (75% on testnet) of the network has upgraded:
+    // Reject block.nVersion=0_2 blocks when 95% (75% on testnet) of the network has upgraded:
     if (block.nVersion < BLOCK_VERSION_0_3 && CBlockIndex::IsSuperMajority(BLOCK_VERSION_0_3, pindexPrev, Params().RejectBlockOutdatedMajority()))
     {
-        return state.Invalid(error("%s : rejected nVersion=2 block", __func__),
+        return state.Invalid(error("%s : rejected nVersion=0_2 block", __func__),
+                             REJECT_OBSOLETE, "bad-version");
+    }
+
+    // Reject block.nVersion=0_3 blocks when 95% (75% on testnet) of the network has upgraded:
+    if (block.nVersion < BLOCK_VERSION_1_3 && CBlockIndex::IsSuperMajority(BLOCK_VERSION_1_3, pindexPrev, Params().RejectBlockOutdatedMajority()))
+    {
+        return state.Invalid(error("%s : rejected nVersion=0_3 block", __func__),
                              REJECT_OBSOLETE, "bad-version");
     }
 
