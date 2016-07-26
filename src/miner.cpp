@@ -322,7 +322,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         UpdateTime(pblock, pindexPrev); // DMC: do this before getting reward from DMC
 
         // Compute final coinbase transaction.
-        txNew.vout[0].nValue = pDmcSystem->GetBlockReward(pblock->nTime) + nFees;
+        txNew.vout[0].nValue = pDmcSystem->GetBlockRewardForNewTip(pblock->nTime) + nFees;
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;

@@ -22,6 +22,11 @@ private:
   std::map<time_interval_t, CAmount> historicalPrices;
 
   const std::string baseApiUrl;
+  
+  const static unsigned int block_0_t      = 1417833678;
+  const static unsigned int block_128002_t = 1419903209;
+  const static unsigned int block_193536_t = 1418206783;
+  const static unsigned int block_livefeed_switch_t = 0;   //TODO(dmc): define more precisely
 };
 
 class CDmcSystem
@@ -37,7 +42,7 @@ public:
 
     CAmount GetBlockReward() const;
     CAmount GetBlockReward(const CBlockIndex* pindex) const;
-    CAmount GetBlockReward(unsigned int time) const;
+    CAmount GetBlockRewardForNewTip(unsigned int time) const;
 
     CAmount GetTotalCoins() const;
     CAmount GetMarketCap() const;
@@ -48,6 +53,12 @@ protected:
 private:
     CGrsApi grsApi;
     const static int liveFeedSwitchHeight = 10000000;
+    
+    const static CAmount genesisReward = 65535 * COIN;
+    const static CAmount minReward = 1 * COIN;
+    const static CAmount maxReward = 100000 * COIN;
+    
+    const static CAmount minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
 };
 
 

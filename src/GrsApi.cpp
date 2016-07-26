@@ -11,7 +11,20 @@ CGrsApi::CGrsApi(const std::string& baseUrl)
 
 CAmount CGrsApi::GetPrice(unsigned int time) const
 {
-    return GetLatestPrice();
+    // projected prices for before-the-trading era
+
+    if (time >= block_0_t && time < block_128002_t) {
+        // genesis reward zone
+        return 656 * USD1 + 35 * USCENT1;
+    } else if (time >= block_128002_t && time < block_193536_t) {
+        // decreasing reward zone
+        return 10 * USCENT1;
+    } else if (time >= block_193536_t && time < block_livefeed_switch_t) {
+        return 10 * USCENT1;
+    }
+
+    // get price from the live feed
+    return GetLatestPrice();    //TODO(dmc): temporary simplification
 }
 
 CAmount CGrsApi::GetLatestPrice() const
@@ -26,27 +39,20 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
 
 CAmount CDmcSystem::GetPrice() const
 {
-    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
-        return grsApi.GetPrice(chainActive.Tip()->nTime);
-    }
-    return 10 * USCENT1;   // 0.1USD
+    return grsApi.GetPrice(chainActive.Tip()->nTime);
 }
 
 CAmount CDmcSystem::GetPrice(unsigned int time) const
 {
-    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
-        return grsApi.GetPrice(time);
-    }
-    return GetPrice();
+    return grsApi.GetPrice(time);
 }
 
 CAmount CDmcSystem::GetTargetPrice() const
 {
-    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
-        const CBlockIndex* pindex = chainActive.Tip();
-        return GetTargetPrice(pindex->nReward);
+    if (chainActive.Tip()) {
+        return GetTargetPrice(chainActive.Tip()->nReward);
     }
-    return 1 * USD1;    // 1USD
+    return 0 * USD1;    // 0USD
 }
 
 CAmount CDmcSystem::GetTargetPrice(unsigned int time) const
@@ -69,11 +75,7 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 
     int nHeight = pindex->nHeight;
 
-    if (pindex->nHeight >= liveFeedSwitchHeight) {
-        CAmount genesisReward = 65535 * COIN;
-        CAmount minReward = 1 * COIN;
-        CAmount maxReward = 100000 * COIN;
-
+    if (nHeight >= liveFeedSwitchHeight) {
         CAmount prevReward = pindex->pprev ? pindex->pprev->nReward : genesisReward;
         CAmount reward = prevReward;
         unsigned int price = GetPrice(pindex->nTime);
@@ -86,15 +88,14 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
         }
         nSubsidy = std::max(minReward, std::min(reward, maxReward));
     } else {
-        // from deprecated GetBlockValue
         if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            const int kFullRewardZone       = 128000;
-            const int kFullReward           = 65535;
-            const int kDecreasingRewardZone = kFullRewardZone + 1 + kFullReward;
+            const int kGenesisRewardZone       = 128000;
+            const int kGenesisReward           = 65535;
+            const int kDecreasingRewardZone = kGenesisRewardZone + 1 + kGenesisReward;
 
-            if (nHeight >= 0 && nHeight <= kFullRewardZone) {
-                nSubsidy = kFullReward * COIN;
-            } else if (nHeight > kFullRewardZone && nHeight < kDecreasingRewardZone) {
+            if (nHeight >= 0 && nHeight <= kGenesisRewardZone) {
+                nSubsidy = kGenesisReward * COIN;
+            } else if (nHeight > kGenesisRewardZone && nHeight < kDecreasingRewardZone) {
                 nSubsidy = (kDecreasingRewardZone - nHeight) * COIN;
             }
         } else {
@@ -105,13 +106,51 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
     return nSubsidy;
 }
 
-CAmount CDmcSystem::GetBlockReward(unsigned int time) const
+CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time) const
 {
-//    unsinged int now = 0;
-//    if (time > lastBlockTime) {
-//        
-//    }
-    return GetBlockReward(chainActive.Tip());   // TODO(dmc)
+    const CAmount genesisReward = 65535 * COIN;
+    const CAmount minReward = 1 * COIN;
+    const CAmount maxReward = 100000 * COIN;
+
+    const CBlockIndex* tip = chainActive.Tip();
+    
+    if (!tip) {
+        return genesisReward;
+    }
+
+    CAmount nSubsidy = 1 * COIN;
+
+    int nHeight = tip->nHeight + 1;
+
+    if (nHeight >= liveFeedSwitchHeight) {
+        CAmount prevReward = tip->nReward;
+        CAmount reward     = prevReward;
+        unsigned int price = GetPrice(tip->nTime);
+        CAmount target     = GetTargetPrice(prevReward);
+
+        if (price < target) {
+            reward -= 1 * COIN;
+        } else if (price > target) {
+            reward += 1 * COIN;
+        }
+        nSubsidy = std::max(minReward, std::min(reward, maxReward));
+    } else {
+        if (Params().NetworkID() == CBaseChainParams::MAIN) {
+            const int kGenesisRewardZone       = 128000;
+            const int kGenesisReward           = 65535;
+            const int kDecreasingRewardZone = kGenesisRewardZone + 1 + kGenesisReward;
+
+            if (nHeight >= 0 && nHeight <= kGenesisRewardZone) {
+                nSubsidy = kGenesisReward * COIN;
+            } else if (nHeight > kGenesisRewardZone && nHeight < kDecreasingRewardZone) {
+                nSubsidy = (kDecreasingRewardZone - nHeight) * COIN;
+            }
+        } else {
+            nSubsidy = 1024 * COIN;
+        }
+    }
+
+    return nSubsidy;
 }
 
 CAmount CDmcSystem::GetTotalCoins() const
@@ -126,7 +165,6 @@ CAmount CDmcSystem::GetMarketCap() const
 
 CAmount CDmcSystem::GetTargetPrice(CAmount reward) const
 {
-    CAmount minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
     CAmount targetPrice = 1 * USD1 + (reward / (100 * COIN));
 
     return std::max(minTargetPrice, targetPrice);
