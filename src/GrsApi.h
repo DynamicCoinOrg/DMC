@@ -13,9 +13,11 @@ class CGrsApi
 public:
     CGrsApi(const std::string& baseUrl);
 
+    // Price at the specified time
     CAmount GetPrice(unsigned int time) const;
+    // Last known price broadcasted by GRS
     CAmount GetLatestPrice() const;
-    
+
 private:
 
   typedef std::pair<unsigned int, unsigned int> time_interval_t;
@@ -26,7 +28,6 @@ private:
   const static unsigned int block_0_t      = 1417833678;
   const static unsigned int block_128002_t = 1419903209;
   const static unsigned int block_193536_t = 1418206783;
-  const static unsigned int block_livefeed_switch_t = 0;   //TODO(dmc): define more precisely
 };
 
 class CDmcSystem
@@ -34,31 +35,30 @@ class CDmcSystem
 public:
     CDmcSystem(const std::string& apiUrl);
 
-    CAmount GetPrice() const;
-    CAmount GetPrice(unsigned int time) const;
-
-    CAmount GetTargetPrice() const;
-    CAmount GetTargetPrice(unsigned int time) const;
-
-    CAmount GetBlockReward() const;
     CAmount GetBlockReward(const CBlockIndex* pindex) const;
     CAmount GetBlockRewardForNewTip(unsigned int time) const;
 
+    // Blockchain tip information
+    CAmount GetBlockReward() const;
+    CAmount GetPrice() const;
+    CAmount GetTargetPrice() const;
     CAmount GetTotalCoins() const;
     CAmount GetMarketCap() const;
 
+protected:
+    CAmount GetPrice(unsigned int time) const;
+    CAmount GetTargetPrice(unsigned int time) const;
+    
 protected:
     CAmount GetTargetPrice(CAmount reward) const;
     
 private:
     CGrsApi grsApi;
-    const static int liveFeedSwitchHeight = 10000000;
-    
-    const static CAmount genesisReward = 65535 * COIN;
-    const static CAmount minReward = 1 * COIN;
-    const static CAmount maxReward = 100000 * COIN;
-    
-    const static CAmount minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
+
+    const CAmount genesisReward = 65535 * COIN;
+    const CAmount minReward = 1 * COIN;
+    const CAmount maxReward = 100000 * COIN;
+    const CAmount minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
 };
 
 

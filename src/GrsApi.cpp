@@ -19,7 +19,7 @@ CAmount CGrsApi::GetPrice(unsigned int time) const
     } else if (time >= block_128002_t && time < block_193536_t) {
         // decreasing reward zone
         return 10 * USCENT1;
-    } else if (time >= block_193536_t && time < block_livefeed_switch_t) {
+    } else if (time >= block_193536_t && time < Params().LiveFeedSwitchTime()) {
         return 10 * USCENT1;
     }
 
@@ -37,37 +37,6 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
     : grsApi(apiUrl)
 {}
 
-CAmount CDmcSystem::GetPrice() const
-{
-    return grsApi.GetPrice(chainActive.Tip()->nTime);
-}
-
-CAmount CDmcSystem::GetPrice(unsigned int time) const
-{
-    return grsApi.GetPrice(time);
-}
-
-CAmount CDmcSystem::GetTargetPrice() const
-{
-    if (chainActive.Tip()) {
-        return GetTargetPrice(chainActive.Tip()->nReward);
-    }
-    return 0 * USD1;    // 0USD
-}
-
-CAmount CDmcSystem::GetTargetPrice(unsigned int time) const
-{
-    if (chainActive.Tip()->nHeight >= liveFeedSwitchHeight) {
-        const CBlockIndex* pindex;  // TODO(dmc): get block for time
-        return GetTargetPrice(pindex->nReward);
-    }
-    return GetTargetPrice();
-}
-
-CAmount CDmcSystem::GetBlockReward() const
-{
-    return chainActive.Tip()->nReward;
-}
 
 CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 {
@@ -75,11 +44,11 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 
     int nHeight = pindex->nHeight;
 
-    if (nHeight >= liveFeedSwitchHeight) {
+    if (pindex->nTime > Params().LiveFeedSwitchTime()) {
         CAmount prevReward = pindex->pprev ? pindex->pprev->nReward : genesisReward;
-        CAmount reward = prevReward;
+        CAmount reward     = prevReward;
         unsigned int price = GetPrice(pindex->nTime);
-        CAmount target = GetTargetPrice(prevReward);
+        CAmount target     = GetTargetPrice(prevReward);
 
         if (price < target) {
             reward -= 1 * COIN;
@@ -89,8 +58,8 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
         nSubsidy = std::max(minReward, std::min(reward, maxReward));
     } else {
         if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            const int kGenesisRewardZone       = 128000;
-            const int kGenesisReward           = 65535;
+            const int kGenesisRewardZone    = 128000;
+            const int kGenesisReward        = 65535;
             const int kDecreasingRewardZone = kGenesisRewardZone + 1 + kGenesisReward;
 
             if (nHeight >= 0 && nHeight <= kGenesisRewardZone) {
@@ -108,10 +77,6 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 
 CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time) const
 {
-    const CAmount genesisReward = 65535 * COIN;
-    const CAmount minReward = 1 * COIN;
-    const CAmount maxReward = 100000 * COIN;
-
     const CBlockIndex* tip = chainActive.Tip();
     
     if (!tip) {
@@ -122,7 +87,7 @@ CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time) const
 
     int nHeight = tip->nHeight + 1;
 
-    if (nHeight >= liveFeedSwitchHeight) {
+    if (tip->nTime > Params().LiveFeedSwitchTime()) {
         CAmount prevReward = tip->nReward;
         CAmount reward     = prevReward;
         unsigned int price = GetPrice(tip->nTime);
@@ -153,6 +118,22 @@ CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time) const
     return nSubsidy;
 }
 
+
+CAmount CDmcSystem::GetBlockReward() const
+{
+    return chainActive.Tip()->nReward;
+}
+
+CAmount CDmcSystem::GetPrice() const
+{
+    return grsApi.GetPrice(chainActive.Tip()->nTime);
+}
+
+CAmount CDmcSystem::GetTargetPrice() const
+{
+    return GetTargetPrice(chainActive.Tip()->nReward);
+}
+
 CAmount CDmcSystem::GetTotalCoins() const
 {
     return chainActive.Tip()->nChainReward;
@@ -162,6 +143,21 @@ CAmount CDmcSystem::GetMarketCap() const
 {
     return (GetTotalCoins() / COIN) * GetPrice();
 }
+
+
+CAmount CDmcSystem::GetPrice(unsigned int time) const
+{
+    return grsApi.GetPrice(time);
+}
+
+CAmount CDmcSystem::GetTargetPrice(unsigned int time) const
+{
+    //TODO(dmc): temporary simplification
+//    const CBlockIndex* pindex;  // TODO(dmc): get block for time
+//    return GetTargetPrice(pindex->nReward);
+    return 10 * USCENT1;
+}
+
 
 CAmount CDmcSystem::GetTargetPrice(CAmount reward) const
 {

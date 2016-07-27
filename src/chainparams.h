@@ -50,6 +50,8 @@ public:
     int EnforceBlockUpgradeMajority() const { return nEnforceBlockUpgradeMajority; }
     int RejectBlockOutdatedMajority() const { return nRejectBlockOutdatedMajority; }
     int ToCheckBlockUpgradeMajority() const { return nToCheckBlockUpgradeMajority; }
+    
+    unsigned int LiveFeedSwitchTime() const { return nLiveFeedSwitchTime; }
 
     /** Used if GenerateBitcoins is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
@@ -92,6 +94,7 @@ protected:
     int nEnforceBlockUpgradeMajority;
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
+    unsigned int nLiveFeedSwitchTime;
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nMinerThreads;

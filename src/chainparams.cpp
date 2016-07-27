@@ -110,6 +110,7 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 3 * 60 * 60; // 3 hours in seconds
         nTargetSpacing = 15;    // seconds
+        nLiveFeedSwitchTime = 1469916000;   //TODO(dmc): 07/30/2016 22:00 (UTC)
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
