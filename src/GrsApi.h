@@ -3,10 +3,13 @@
 
 #include "amount.h"
 #include "chain.h"
+
 #include <ctime>
 #include <string>
 #include <map>
 #include <utility>
+
+class CValidationState;
 
 class CGrsApi
 {
@@ -35,6 +38,7 @@ class CDmcSystem
 public:
     CDmcSystem(const std::string& apiUrl);
 
+    bool CheckBlockReward(const CBlock& block, CAmount fees, CValidationState& state, CBlockIndex* pindex) const;
     CAmount GetBlockReward(const CBlockIndex* pindex) const;
     CAmount GetBlockRewardForNewTip(unsigned int time) const;
 

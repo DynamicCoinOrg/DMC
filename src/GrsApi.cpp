@@ -2,6 +2,8 @@
 #include "amount.h"
 #include "chainparams.h"
 #include "main.h"
+#include "block.h"
+#include "util.h"
 
 
 CGrsApi::CGrsApi(const std::string& baseUrl)
@@ -37,6 +39,40 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
     : grsApi(apiUrl)
 {}
 
+bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidationState& state, CBlockIndex* pindex) const
+{
+    CAmount blockOutput = block.vtx[0].GetValueOut();
+    if (!blockOutput || blockOutput <= nFees) {
+        return state.DoS(100,
+                     error("CDmcSystem::CheckBlockReward() : coinbase pays zero or <= fees (coinbase=%d, fees=%d)",
+                           blockOutput, nFees),
+                           REJECT_INVALID, "bad-cb-amount");
+    }
+    CAmount blockReward = blockOutput - nFees;
+
+    //TODO(dmc): temporary simplification – one GetBlockReward result comparison check
+    //            should be enough in the future (the second case of "if" construction)
+    if (pindex->nTime > Params().LiveFeedSwitchTime()) {
+        // simplified reward checks
+        CAmount prevReward = pindex->pprev ? pindex->pprev->nReward : genesisReward;
+        CAmount rewDiff = std::abs(blockReward - prevReward);
+        if ((rewDiff == 0 || rewDiff == 1) &&
+            (blockReward >= minReward && blockReward <= maxReward)) {
+            return true;
+        }
+        return state.DoS(100,
+                         error("CDmcSystem::CheckBlockReward() : coinbase pays wrong (actual=%d vs mustbe=%d)",
+                               block.vtx[0].GetValueOut(), GetBlockReward(pindex) + nFees),
+                               REJECT_INVALID, "bad-cb-amount");
+    } else {
+        if (blockReward != GetBlockReward(pindex)) {
+            return state.DoS(100,
+                         error("CDmcSystem::CheckBlockReward() : coinbase pays wrong reward (actual=%d vs mustbe=%d, fees=%d)",
+                               blockReward, GetBlockReward(pindex), nFees),
+                               REJECT_INVALID, "bad-cb-amount");
+        }
+    }
+}
 
 CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 {
