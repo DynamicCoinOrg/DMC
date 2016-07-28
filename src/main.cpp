@@ -1779,8 +1779,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return rewardOk;
     }
 
-    pindex->nReward = block.vtx[0].GetValueOut() - nFees;
-    pindex->nChainReward = pindex->pprev ? pindex->pprev->nChainReward : 0 + pindex->nReward;
+    pindex->nReward      = block.vtx[0].GetValueOut() - nFees;
+    pindex->nChainReward = (pindex->pprev ? pindex->pprev->nChainReward : 0) + pindex->nReward;
 
     if (!control.Wait())
         return state.DoS(100, false);
