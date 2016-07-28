@@ -41,6 +41,8 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
 
 bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidationState& state, CBlockIndex* pindex) const
 {
+    LogPrintf("CDmcSystem::CheckBlockReward: block.nTime=%d, fees=%d, hash=%s, height=%d, time=%d\n", block.nTime, nFees, pindex->GetBlockHash().ToString(), pindex->nHeight, pindex->nTime);
+
     CAmount blockOutput = block.vtx[0].GetValueOut();
     if (!blockOutput || blockOutput <= nFees) {
         return state.DoS(100,
@@ -64,18 +66,21 @@ bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidatio
                          error("CDmcSystem::CheckBlockReward() : coinbase pays wrong (actual=%d vs mustbe=%d)",
                                block.vtx[0].GetValueOut(), GetBlockReward(pindex) + nFees),
                                REJECT_INVALID, "bad-cb-amount");
-    } else {
-        if (blockReward != GetBlockReward(pindex)) {
-            return state.DoS(100,
-                         error("CDmcSystem::CheckBlockReward() : coinbase pays wrong reward (actual=%d vs mustbe=%d, fees=%d)",
-                               blockReward, GetBlockReward(pindex), nFees),
-                               REJECT_INVALID, "bad-cb-amount");
-        }
     }
+
+    if (blockReward != GetBlockReward(pindex)) {
+        return state.DoS(100,
+                     error("CDmcSystem::CheckBlockReward() : coinbase pays wrong reward (actual=%d vs mustbe=%d, fees=%d)",
+                           blockReward, GetBlockReward(pindex), nFees),
+                           REJECT_INVALID, "bad-cb-amount");
+    }
+    return true;
 }
 
 CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
 {
+    LogPrintf("CDmcSystem::GetBlockReward: hash=%s, height=%d, time=%d\n", pindex->GetBlockHash().ToString(), pindex->nHeight, pindex->nTime);
+
     CAmount nSubsidy = 1 * COIN;
 
     int nHeight = pindex->nHeight;
