@@ -129,6 +129,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
 
     // init "out of sync" warning labels
     ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
+    ui->labelWalletStatus_2->setText("(" + tr("out of sync") + ")");
     ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
 
     // start with displaying the "out of sync" warnings
@@ -279,5 +280,6 @@ void OverviewPage::updateAlerts(const QString &warnings)
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
     ui->labelWalletStatus->setVisible(fShow);
+    ui->labelWalletStatus_2->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
