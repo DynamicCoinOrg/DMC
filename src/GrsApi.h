@@ -59,10 +59,10 @@ protected:
 private:
     CGrsApi grsApi;
 
-    const CAmount genesisReward = 65535 * COIN;
-    const CAmount minReward = 1 * COIN;
-    const CAmount maxReward = 100000 * COIN;
-    const CAmount minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
+    CAmount genesisReward;
+    CAmount minReward;
+    CAmount maxReward;
+    CAmount minTargetPrice;
 };
 
 

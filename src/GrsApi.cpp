@@ -37,7 +37,12 @@ CAmount CGrsApi::GetLatestPrice() const
 
 CDmcSystem::CDmcSystem(const std::string& apiUrl)
     : grsApi(apiUrl)
-{}
+{
+    genesisReward = 65535 * COIN;
+    minReward = 1 * COIN;
+    maxReward = 100000 * COIN;
+    minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
+}
 
 bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidationState& state, CBlockIndex* pindex) const
 {
