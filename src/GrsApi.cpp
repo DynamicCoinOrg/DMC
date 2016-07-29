@@ -13,7 +13,7 @@
 #include <curlpp/Infos.hpp>
 
 #include "json/json_spirit_value.h"
-#include "json/json_spirit_reader.h"
+#include "json/json_spirit_reader_template.h"
 
 
 CGrsApi::CGrsApi(const std::string& baseUrl)
@@ -109,7 +109,7 @@ CAmount CGrsApi::DoApiPriceRequest(const std::string& reqName,
 
     try {
         json_spirit::Value value;
-        json_spirit::read(rawResponse.str(), value);
+        json_spirit::read_string(rawResponse.str(), value);
         json_spirit::Object obj(value.get_obj());
 
         bool price_read = false;
@@ -123,7 +123,6 @@ CAmount CGrsApi::DoApiPriceRequest(const std::string& reqName,
         if (!price_read) {
             throw std::domain_error("No price field found");
         }
-
     } catch (const std::invalid_argument& e) {
         throw std::runtime_error(std::string(e.what())
                                 + "; url = '" + apiUrl.str() + "'"
@@ -152,7 +151,6 @@ int CGrsApi::DoApiRequest(const std::string& url, std::ostringstream& oss) const
     request.perform();
 
     return curlpp::infos::ResponseCode::get(request);
-    // return 0;
 }
 
 
