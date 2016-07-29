@@ -681,6 +681,7 @@ if test x$use_pkgconfig = xyes; then
     [
       PKG_CHECK_MODULES([SSL], [libssl],, [AC_MSG_ERROR(openssl  not found.)])
       PKG_CHECK_MODULES([CRYPTO], [libcrypto],,[AC_MSG_ERROR(libcrypto  not found.)])
+      PKG_CHECK_MODULES([CURLPP], [curlpp],,[AC_MSG_ERROR(curlpp not found.)])
       DYNAMICCOIN_QT_CHECK([PKG_CHECK_MODULES([PROTOBUF], [protobuf], [have_protobuf=yes], [DYNAMICCOIN_QT_FAIL(libprotobuf not found)])])
       if test x$use_qr != xno; then
         DYNAMICCOIN_QT_CHECK([PKG_CHECK_MODULES([QR], [libqrencode], [have_qrencode=yes], [have_qrencode=no])])
@@ -693,6 +694,9 @@ else
 
   AC_CHECK_HEADER([openssl/ssl.h],, AC_MSG_ERROR(libssl headers missing),)
   AC_CHECK_LIB([ssl],         [main],SSL_LIBS=-lssl, AC_MSG_ERROR(libssl missing))
+
+  AC_CHECK_HEADERS([curlpp/cURLpp.hpp curlpp/Easy.hpp curlpp/Options.hpp curlpp/Infos.hpp],,AC_MSG_ERROR(curlpp headers missing))
+  AC_CHECK_LIB([curlpp],[main],[CURLPP_LIBS=-lcurlpp -lcurl], AC_MSG_ERROR(curlpp missing))
 
   DYNAMICCOIN_QT_CHECK(AC_CHECK_LIB([protobuf] ,[main],[PROTOBUF_LIBS=-lprotobuf], DYNAMICCOIN_QT_FAIL(libprotobuf not found)))
   if test x$use_qr != xno; then
@@ -890,6 +894,8 @@ AC_SUBST(BUILD_QT)
 AC_SUBST(BUILD_TEST_QT)
 AC_SUBST(MINIUPNPC_CPPFLAGS)
 AC_SUBST(MINIUPNPC_LIBS)
+AC_SUBST(CURLPP_CFLAGS)
+AC_SUBST(CURLPP_LIBS)
 AC_CONFIG_FILES([Makefile src/Makefile share/setup.nsi share/qt/Info.plist src/test/buildenv.py])
 AC_CONFIG_FILES([qa/pull-tester/run-dynamiccoind-for-test.sh],[chmod +x qa/pull-tester/run-dynamiccoind-for-test.sh])
 AC_CONFIG_FILES([qa/pull-tester/tests-config.sh],[chmod +x qa/pull-tester/tests-config.sh])
