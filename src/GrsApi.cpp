@@ -44,11 +44,11 @@ CAmount CGrsApi::GetPrice(unsigned int time)
     while (true) {  //TODO(dmc): !!!
         try {
             unsigned int timestamp = 0; //TODO(dmc): must be 'time'
-            CAmount price = GetGrsApiPrice(0);
+            CAmount price = GetGrsApiPrice(timestamp);
             LogPrintf("GRS price for timestamp: time = %d, price = %d\n", time, price);
             return price;
         } catch (const std::runtime_error& e) {
-            LogPrintf("Can't get GRS price for timestamp: %s\n", e.what());
+            error("Can't get GRS price for timestamp: %s\n", e.what());
         }
     }
 }
@@ -60,6 +60,7 @@ CAmount CGrsApi::GetLatestPrice() const
 
 CAmount CGrsApi::GetGrsApiPrice(unsigned int timestamp)
 {
+    LogPrintf("Getting GRS price for timestamp: time = %d\n", time);
     std::ostringstream reqArgs;
     if (timestamp != 0) {
         reqArgs << timestamp;
