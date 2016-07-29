@@ -17,11 +17,17 @@ public:
     CGrsApi(const std::string& baseUrl);
 
     // Price at the specified time
-    CAmount GetPrice(unsigned int time) const;
+    CAmount GetPrice(unsigned int time);
     // Last known price broadcasted by GRS
     CAmount GetLatestPrice() const;
 
 private:
+
+  CAmount GetGrsApiPrice(unsigned int time = 0);
+  CAmount DoApiPriceRequest(const std::string& reqName,
+                            const std::string& args) const;
+  int DoApiRequest(const std::string& url, std::ostringstream& oss) const;
+
 
   typedef std::pair<unsigned int, unsigned int> time_interval_t;
   std::map<time_interval_t, CAmount> historicalPrices;
@@ -38,19 +44,19 @@ class CDmcSystem
 public:
     CDmcSystem(const std::string& apiUrl);
 
-    bool CheckBlockReward(const CBlock& block, CAmount fees, CValidationState& state, CBlockIndex* pindex) const;
-    CAmount GetBlockReward(const CBlockIndex* pindex) const;
-    CAmount GetBlockRewardForNewTip(unsigned int time) const;
+    bool CheckBlockReward(const CBlock& block, CAmount fees, CValidationState& state, CBlockIndex* pindex);
+    CAmount GetBlockReward(const CBlockIndex* pindex);
+    CAmount GetBlockRewardForNewTip(unsigned int time);
 
     // Blockchain tip information
     CAmount GetBlockReward() const;
-    CAmount GetPrice() const;
+    CAmount GetPrice();
     CAmount GetTargetPrice() const;
     CAmount GetTotalCoins() const;
-    CAmount GetMarketCap() const;
+    CAmount GetMarketCap();
 
 protected:
-    CAmount GetPrice(unsigned int time) const;
+    CAmount GetPrice(unsigned int time);
     CAmount GetTargetPrice(unsigned int time) const;
     
 protected:

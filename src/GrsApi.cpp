@@ -5,14 +5,27 @@
 #include "block.h"
 #include "util.h"
 
+#include <iostream>
+#include <sstream>
+
+#include <curlpp/cURLpp.hpp>
+#include <curlpp/Easy.hpp>
+#include <curlpp/Options.hpp>
+#include <curlpp/Infos.hpp>
+
+#include "json/json_spirit_value.h"
+#include "json/json_spirit_reader.h"
+
 
 CGrsApi::CGrsApi(const std::string& baseUrl)
   : baseApiUrl(baseUrl)
 {}
 
 
-CAmount CGrsApi::GetPrice(unsigned int time) const
+CAmount CGrsApi::GetPrice(unsigned int time)
 {
+    LogPrintf("CGrsApi::GetPrice: time = %d\n", time);
+
     // projected prices for before-the-trading era
 
     if (time >= block_0_t && time < block_128002_t) {
@@ -25,13 +38,121 @@ CAmount CGrsApi::GetPrice(unsigned int time) const
         return 10 * USCENT1;
     }
 
+    // TODO(dmc): check cached price
+
+
     // get price from the live feed
-    return GetLatestPrice();    //TODO(dmc): temporary simplification
+    while (true) {  //TODO(dmc): !!!
+        try {
+            unsigned int timestamp = 0; //TODO(dmc): must be 'time'
+            CAmount price = GetGrsApiPrice(0);
+            LogPrintf("GRS price for timestamp: time = %d, price = %d\n", time, price);
+            return price;
+        } catch (const std::runtime_error& e) {
+            LogPrintf("Can't get GRS price for timestamp: %s\n", e.what());
+        }
+    }
 }
 
 CAmount CGrsApi::GetLatestPrice() const
 {
     return 10 * USCENT1;   // STUB: 0.1USD, TODO(dmc): get actual coin price
+}
+
+CAmount CGrsApi::GetGrsApiPrice(unsigned int timestamp)
+{
+    std::ostringstream reqArgs;
+    if (timestamp != 0) {
+        reqArgs << timestamp;
+    }
+    return DoApiPriceRequest("price", reqArgs.str());
+}
+
+CAmount CGrsApi::DoApiPriceRequest(const std::string& reqName,
+                                   const std::string& args) const
+{
+    CAmount price = 0;
+    int apiResponseCode = 200;
+
+    std::ostringstream apiUrl;
+    apiUrl << baseApiUrl << reqName << "/" << args;
+
+    std::ostringstream rawResponse;
+    try {
+        apiResponseCode = DoApiRequest(apiUrl.str(), rawResponse);
+        std::clog << "GRS API response: " << rawResponse.str() << std::endl;
+    } catch (const curlpp::RuntimeError& e) {
+        throw std::runtime_error(std::string(e.what())
+                                 + "; url = '" + apiUrl.str() + "'"
+                                 + "; response = '" + rawResponse.str() + "'");
+    } catch (const curlpp::LogicError& e) {
+        throw std::runtime_error(std::string(e.what())
+                                 + "; url = '" + apiUrl.str() + "'"
+                                 + "; response = '" + rawResponse.str() + "'");
+    } catch (const std::invalid_argument& e) {
+        throw std::runtime_error(std::string(e.what())
+                                + "; url = '" + apiUrl.str() + "'"
+                                + "; response = '" + rawResponse.str() + "'");
+    } catch (const std::domain_error& e) {
+        throw std::runtime_error(std::string(e.what())
+                                 + "; url = '" + apiUrl.str() + "'"
+                                 + "; response = '" + rawResponse.str() + "'");
+    }
+
+    if (apiResponseCode != 200) {
+        std::ostringstream oss;
+        oss << "apiResponseCode != 200; code = "
+            << apiResponseCode
+            << "; url = '" + apiUrl.str() + "'"
+             + "; response = '" + rawResponse.str() + "'";
+        throw std::runtime_error(oss.str());
+    }
+
+    try {
+        json_spirit::Value value;
+        json_spirit::read(rawResponse.str(), value);
+        json_spirit::Object obj(value.get_obj());
+
+        bool price_read = false;
+        for(json_spirit::Object::size_type i = 0; i != obj.size(); ++i) {
+            const json_spirit::Pair& pair = obj[i];
+            if (pair.name_ == "price") {
+                price = pair.value_.get_int();
+            }
+        }
+        if (!price_read) {
+            throw std::domain_error("No price field found");
+        }
+
+    } catch (const std::invalid_argument& e) {
+        throw std::runtime_error(std::string(e.what())
+                                + "; url = '" + apiUrl.str() + "'"
+                                + "; response = '" + rawResponse.str() + "'");
+    } catch (const std::domain_error& e) {
+        throw std::runtime_error(std::string(e.what())
+                                 + "; url = '" + apiUrl.str() + "'"
+                                 + "; response = '" + rawResponse.str() + "'");
+    }
+
+    return price;
+}
+
+int CGrsApi::DoApiRequest(const std::string& url, std::ostringstream& oss) const
+{
+    // std::clog << "GRS API url: " << url << std::endl;
+
+    curlpp::Cleanup myCleanup;
+
+    curlpp::options::Url reqUrl(url);
+    curlpp::Easy request;
+    request.setOpt(reqUrl);
+
+    curlpp::options::WriteStream ws(&oss);
+    request.setOpt(ws);
+    request.perform();
+
+    return curlpp::infos::ResponseCode::get(request);
+    // return 0;
 }
 
 
@@ -44,7 +165,7 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
     minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
 }
 
-bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidationState& state, CBlockIndex* pindex) const
+bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidationState& state, CBlockIndex* pindex)
 {
     LogPrintf("CDmcSystem::CheckBlockReward: block.nTime=%d, fees=%d, hash=%s, height=%d, time=%d\n", block.nTime, nFees, pindex->GetBlockHash().ToString(), pindex->nHeight, pindex->nTime);
 
@@ -82,7 +203,7 @@ bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidatio
     return true;
 }
 
-CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
+CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex)
 {
     LogPrintf("CDmcSystem::GetBlockReward: hash=%s, height=%d, time=%d\n", pindex->GetBlockHash().ToString(), pindex->nHeight, pindex->nTime);
 
@@ -121,7 +242,7 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex) const
     return nSubsidy;
 }
 
-CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time) const
+CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time)
 {
     const CBlockIndex* tip = chainActive.Tip();
     
@@ -170,7 +291,7 @@ CAmount CDmcSystem::GetBlockReward() const
     return chainActive.Tip()->nReward;
 }
 
-CAmount CDmcSystem::GetPrice() const
+CAmount CDmcSystem::GetPrice()
 {
     return grsApi.GetPrice(chainActive.Tip()->nTime);
 }
@@ -185,13 +306,13 @@ CAmount CDmcSystem::GetTotalCoins() const
     return chainActive.Tip()->nChainReward;
 }
 
-CAmount CDmcSystem::GetMarketCap() const
+CAmount CDmcSystem::GetMarketCap()
 {
     return (GetTotalCoins() / COIN) * GetPrice();
 }
 
 
-CAmount CDmcSystem::GetPrice(unsigned int time) const
+CAmount CDmcSystem::GetPrice(unsigned int time)
 {
     return grsApi.GetPrice(time);
 }
