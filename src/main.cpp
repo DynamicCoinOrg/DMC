@@ -29,6 +29,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace boost;
 using namespace std;
@@ -2307,7 +2308,7 @@ CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
     pindexNew->nSequenceId = 0;
     BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
     pindexNew->phashBlock = &((*mi).first);
-    pindexNew->pPowBlock = std::make_shared<uint256>(pow);
+    pindexNew->pPowBlock = boost::make_shared<uint256>(pow);
     BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);
     if (miPrev != mapBlockIndex.end())
     {

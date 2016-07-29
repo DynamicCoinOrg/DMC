@@ -12,8 +12,8 @@
 #include "uint256.h"
 
 #include <vector>
-#include <memory>
 
+#include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 
 struct CDiskBlockPos
@@ -100,7 +100,7 @@ public:
     const uint256* phashBlock;
     
     //! pointer to the PoW of the block, if any. memory is owned by this CBlockIndex
-    std::shared_ptr<uint256> pPowBlock;
+    boost::shared_ptr<uint256> pPowBlock;
 
     //! pointer to the index of the predecessor of this block
     CBlockIndex* pprev;

@@ -2,7 +2,6 @@
 #include "amount.h"
 #include "chainparams.h"
 #include "main.h"
-#include "block.h"
 #include "util.h"
 
 #include <iostream>

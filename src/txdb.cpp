@@ -10,9 +10,8 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include <boost/thread.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace std;
 
@@ -203,7 +202,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 CBlockIndex* pindexNew = InsertBlockIndex(diskindex.GetBlockHash());
                 uint256 pow = diskindex.GetBlockPoW();
                 pindexNew->pprev          = InsertBlockIndex(diskindex.hashPrev);
-                pindexNew->pPowBlock      = std::make_shared<uint256>(pow);
+                pindexNew->pPowBlock      = boost::make_shared<uint256>(pow);
                 pindexNew->nHeight        = diskindex.nHeight;
                 pindexNew->nFile          = diskindex.nFile;
                 pindexNew->nDataPos       = diskindex.nDataPos;
