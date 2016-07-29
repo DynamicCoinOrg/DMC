@@ -117,6 +117,7 @@ CAmount CGrsApi::DoApiPriceRequest(const std::string& reqName,
             const json_spirit::Pair& pair = obj[i];
             if (pair.name_ == "price") {
                 price = pair.value_.get_int();
+                price_read = true;
             }
         }
         if (!price_read) {
