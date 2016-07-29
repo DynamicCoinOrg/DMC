@@ -12,6 +12,7 @@
 #include "uint256.h"
 
 #include <vector>
+#include <memory>
 
 #include <boost/foreach.hpp>
 
