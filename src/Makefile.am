@@ -17,6 +17,8 @@ $(LIBLEVELDB) $(LIBMEMENV):
           OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
+CURLPP_CFLAGS=-DBUILDING_CURLPP -DCURLPP_STATICLIB -I$(srcdir)/curlpp/include -I$(srcdir)/curlpp/include/curlpp -I$(srcdir)/curlpp/include/curlpp/internal -I$(srcdir)/curlpp/include/utilspp -I$(srcdir)/curlpp/include/utilspp/functor -I$(srcdir)/curlpp/include/utilspp/singleton
+CURLPP_LIBS=-lcurl
 DYNAMICCOIN_CONFIG_INCLUDES=-I$(builddir)/config
 DYNAMICCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS) $(CURLPP_CFLAGS)
 
@@ -159,6 +161,25 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libdynamiccoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
+
+curlpp_SOURCES = \
+  curlpp/src/curlpp/cURLpp.cpp  \
+  curlpp/src/curlpp/Exception.cpp  \
+  curlpp/src/curlpp/Easy.cpp  \
+  curlpp/src/curlpp/Form.cpp  \
+  curlpp/src/curlpp/Info.cpp \
+  curlpp/src/curlpp/Multi.cpp \
+  curlpp/src/curlpp/OptionBase.cpp \
+  curlpp/src/curlpp/Options.cpp \
+  curlpp/src/curlpp/autolink.h \
+  curlpp/src/utilspp/LifetimeLibrary.cpp \
+  curlpp/src/utilspp/PrivateMembers.cpp \
+  curlpp/src/curlpp/internal/CurlHandle.cpp \
+  curlpp/src/curlpp/internal/OptionList.cpp \
+  curlpp/src/curlpp/internal/OptionSetter.cpp \
+  curlpp/src/curlpp/internal/SList.cpp
+
+
 # server: shared between dynamiccoind and dynamiccoin-qt
 libdynamiccoin_server_a_CPPFLAGS = $(DYNAMICCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libdynamiccoin_server_a_SOURCES = \
@@ -188,7 +209,8 @@ libdynamiccoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   $(JSON_H) \
-  $(DYNAMICCOIN_CORE_H)
+  $(DYNAMICCOIN_CORE_H) \
+  $(curlpp_SOURCES)
 
 # wallet: shared between dynamiccoind and dynamiccoin-qt, but only linked
 # when wallet enabled
