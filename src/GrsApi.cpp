@@ -60,7 +60,7 @@ CAmount CGrsApi::GetLatestPrice() const
 
 CAmount CGrsApi::GetGrsApiPrice(unsigned int timestamp)
 {
-    LogPrintf("Getting GRS price for timestamp: time = %d\n", time);
+    LogPrintf("Getting GRS price for timestamp: time = %d\n", timestamp);
     std::ostringstream reqArgs;
     if (timestamp != 0) {
         reqArgs << timestamp;
