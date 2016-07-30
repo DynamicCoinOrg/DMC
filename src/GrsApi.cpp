@@ -327,7 +327,7 @@ CAmount CDmcSystem::GetTargetPrice(unsigned int time) const
 
 CAmount CDmcSystem::GetTargetPrice(CAmount reward) const
 {
-    CAmount targetPrice = 1 * USD1 + (reward / (100 * COIN));
+    CAmount targetPrice = 1 * USD1 + (reward * USD1) / (100 * COIN);
 
     return std::max(minTargetPrice, targetPrice);
 }
