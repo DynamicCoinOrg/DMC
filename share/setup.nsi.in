@@ -81,11 +81,10 @@ Section -Main SEC0000
     File @abs_top_srcdir@/release/dynamiccoin-cli.exe
     SetOutPath $INSTDIR\doc
     File /r @abs_top_srcdir@/doc\*.*
-    SetOutPath $INSTDIR
     SetShellVarContext "current"
-    IfFileExists "$APPDATA\DynamicCoin\dynamiccoin.conf" +2 0
-    File @abs_top_srcdir@/share/dynamiccoin.conf
     SetOutPath "$APPDATA\DynamicCoin"
+    IfFileExists "$APPDATA\DynamicCoin\dynamiccoin.conf" +1 0
+    File @abs_top_srcdir@/share/dynamiccoin.conf
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd
 
