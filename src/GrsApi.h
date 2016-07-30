@@ -34,9 +34,9 @@ private:
 
   const std::string baseApiUrl;
   
-  const static unsigned int block_0_t      = 1417833678;
-  const static unsigned int block_128002_t = 1419903209;
-  const static unsigned int block_193536_t = 1418206783;
+  const static unsigned int block_0_t      = 1438828878;
+  const static unsigned int block_128002_t = 1440898409;
+  const static unsigned int block_193536_t = 1441880383;
 };
 
 class CDmcSystem
