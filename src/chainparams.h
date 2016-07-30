@@ -52,6 +52,7 @@ public:
     int ToCheckBlockUpgradeMajority() const { return nToCheckBlockUpgradeMajority; }
     
     unsigned int LiveFeedSwitchTime() const { return nLiveFeedSwitchTime; }
+    int PowSwitchHeight() const { return nPoWSwitchHeight; }
 
     /** Used if GenerateBitcoins is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
@@ -95,6 +96,7 @@ protected:
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
     unsigned int nLiveFeedSwitchTime;
+    int nPoWSwitchHeight;
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nMinerThreads;
