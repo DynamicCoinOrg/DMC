@@ -84,7 +84,7 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     File @abs_top_srcdir@/share/dynamiccoin.conf
     SetShellVarContext "current"
-    SetOutPath "${APPDATA}\${ProductName}"
+    SetOutPath "$APPDATA\DynamicCoin"
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd
 
