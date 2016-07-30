@@ -17,10 +17,10 @@ $(LIBLEVELDB) $(LIBMEMENV):
           OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
-CURLPP_CFLAGS=-DBUILDING_CURLPP -DCURLPP_STATICLIB -I$(srcdir)/curlpp/include -I$(srcdir)/curlpp/include/curlpp -I$(srcdir)/curlpp/include/curlpp/internal -I$(srcdir)/curlpp/include/utilspp -I$(srcdir)/curlpp/include/utilspp/functor -I$(srcdir)/curlpp/include/utilspp/singleton
+CURLPP_CFLAGS=-DCURL_STATICLIB -DBUILDING_CURLPP -DCURLPP_STATICLIB -I$(srcdir)/curlpp/include -I$(srcdir)/curlpp/include/curlpp -I$(srcdir)/curlpp/include/curlpp/internal -I$(srcdir)/curlpp/include/utilspp -I$(srcdir)/curlpp/include/utilspp/functor -I$(srcdir)/curlpp/include/utilspp/singleton
 CURLPP_LIBS=-lcurl
 DYNAMICCOIN_CONFIG_INCLUDES=-I$(builddir)/config
-DYNAMICCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS) $(CURLPP_CFLAGS)
+DYNAMICCOIN_INCLUDES=-DCURL_STATICLIB -I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS) $(CURLPP_CFLAGS)
 
 DYNAMICCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
 
