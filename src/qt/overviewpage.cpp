@@ -129,6 +129,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
 
     // init "out of sync" warning labels
     ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
+    ui->labelWalletStatus_2->setText("(" + tr("out of sync") + ")");
     ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
 
     // start with displaying the "out of sync" warnings
@@ -201,11 +202,11 @@ void OverviewPage::setDMCInfo(const CAmount& blockReward, const CAmount& coinPri
     currentTotalCoins = totalCoins;
     currentMarketCap = marketCap;
 
-    ui->labelBlockReward->setText(BitcoinUnits::formatWithUnit(unit, blockReward, false, BitcoinUnits::separatorAlways));
+    ui->labelBlockReward->setText(BitcoinUnits::formatWithUnit(unit, blockReward, false, BitcoinUnits::separatorAlways, true, true));
     ui->labelCoinPrice->setText(USDUnits::formatWithUnit(unit, coinPrice, false, USDUnits::separatorAlways));
     ui->labelTargetPrice->setText(USDUnits::formatWithUnit(unit, targetPrice, false, USDUnits::separatorAlways));
-    ui->labelTotalCoins->setText(BitcoinUnits::formatWithUnit(unit, totalCoins, false, BitcoinUnits::separatorAlways));
-    ui->labelMarketCap->setText(USDUnits::formatWithUnit(unit, marketCap, false, USDUnits::separatorAlways));
+    ui->labelTotalCoins->setText(BitcoinUnits::formatWithUnit(unit, totalCoins, false, BitcoinUnits::separatorAlways, true, true));
+    ui->labelMarketCap->setText(USDUnits::formatWithUnit(unit, marketCap, false, USDUnits::separatorAlways, true, true));
 }
 
 void OverviewPage::setClientModel(ClientModel *model)
@@ -279,5 +280,6 @@ void OverviewPage::updateAlerts(const QString &warnings)
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
     ui->labelWalletStatus->setVisible(fShow);
+    ui->labelWalletStatus_2->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }

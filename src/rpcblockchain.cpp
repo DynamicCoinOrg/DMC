@@ -61,6 +61,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
 {
     Object result;
     result.push_back(Pair("hash", block.GetHash().GetHex()));
+    result.push_back(Pair("pow", block.GetPoW().GetHex()));
     int confirmations = -1;
     // Only report confirmations if the block is on the main chain
     if (chainActive.Contains(blockindex))
@@ -559,6 +560,7 @@ Value getchaintips(const Array& params, bool fHelp)
         Object obj;
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
+        obj.push_back(Pair("pow", block->pPowBlock->GetHex()));
 
         const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));

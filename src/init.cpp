@@ -24,6 +24,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "GrsApi.h"
 #ifdef ENABLE_WALLET
 #include "db.h"
 #include "wallet.h"
@@ -952,6 +953,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     BOOST_FOREACH(string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
+
+    pDmcSystem = new CDmcSystem("http://dynamiccoin.org/");
 
     // ********************************************************* Step 7: load block chain
 

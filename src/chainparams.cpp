@@ -110,6 +110,8 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 3 * 60 * 60; // 3 hours in seconds
         nTargetSpacing = 15;    // seconds
+        nLiveFeedSwitchTime = 1469916000;   //TODO(dmc): 07/30/2016 22:00 (UTC)
+        nPoWSwitchHeight = 2500000;
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -126,7 +128,7 @@ public:
         genesis.vtx[0] = txNew;
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
-        genesis.nVersion = 3;
+        genesis.nVersion = BLOCK_VERSION_0_3;
         genesis.nTime    = 1438828878;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 20475014;
@@ -198,7 +200,7 @@ public:
         genesis.vtx[0] = txNew;
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
-        genesis.nVersion = 3;
+        genesis.nVersion = BLOCK_VERSION_0_3;
         genesis.nTime    = 1436316222;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 42228550;
@@ -268,7 +270,7 @@ public:
         genesis.vtx[0] = txNew;
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
-        genesis.nVersion = 3;
+        genesis.nVersion = BLOCK_VERSION_0_3;
         genesis.nTime    = 1425370890;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 48961;
@@ -320,7 +322,7 @@ public:
         genesis.vtx[0] = txNew;
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
-        genesis.nVersion = 3;
+        genesis.nVersion = BLOCK_VERSION_0_3;
         genesis.nTime    = 1429025148;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 6505914;

@@ -13,6 +13,7 @@
 
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 
 struct CDiskBlockPos
@@ -97,6 +98,9 @@ class CBlockIndex
 public:
     //! pointer to the hash of the block, if any. memory is owned by this CBlockIndex
     const uint256* phashBlock;
+    
+    //! pointer to the PoW of the block, if any. memory is owned by this CBlockIndex
+    boost::shared_ptr<uint256> pPowBlock;
 
     //! pointer to the index of the predecessor of this block
     CBlockIndex* pprev;
@@ -150,6 +154,7 @@ public:
     void SetNull()
     {
         phashBlock = NULL;
+        pPowBlock.reset();
         pprev = NULL;
         pskip = NULL;
         nHeight = 0;
@@ -217,10 +222,39 @@ public:
         block.nNonce         = nNonce;
         return block;
     }
+    
+    int16_t GetBtcVersion() const
+    {
+        return nVersion & 65535;
+    }
+    
+    int16_t GetDmcVersion() const
+    {
+        return nVersion & (65535 << 16);
+    }
+    
+    int32_t SetBtcVersion(int16_t v)
+    {
+        int16_t high = GetDmcVersion();
+        nVersion = (high << 16) | v;
+        return nVersion;
+    }
+    
+    int32_t SetDmcVersion(int16_t v)
+    {
+        int16_t low = GetBtcVersion();
+        nVersion = (v << 16) | low;
+        return nVersion;
+    }
 
     uint256 GetBlockHash() const
     {
         return *phashBlock;
+    }
+    
+    uint256 GetBlockPoW() const
+    {
+        return *pPowBlock;
     }
 
     int64_t GetBlockTime() const
@@ -315,6 +349,7 @@ public:
         READWRITE(VARINT(nHeight));
         READWRITE(VARINT(nStatus));
         READWRITE(VARINT(nTx));
+        READWRITE(VARINT(nReward));
         if (nStatus & (BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO))
             READWRITE(VARINT(nFile));
         if (nStatus & BLOCK_HAVE_DATA)
@@ -343,6 +378,17 @@ public:
         return block.GetHash();
     }
 
+    uint256 GetBlockPoW() const
+    {
+        CBlockHeader block;
+        block.nVersion        = nVersion;
+        block.hashPrevBlock   = hashPrev;
+        block.hashMerkleRoot  = hashMerkleRoot;
+        block.nTime           = nTime;
+        block.nBits           = nBits;
+        block.nNonce          = nNonce;
+        return block.GetPoW();
+    }
 
     std::string ToString() const
     {

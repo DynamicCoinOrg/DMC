@@ -50,6 +50,9 @@ public:
     int EnforceBlockUpgradeMajority() const { return nEnforceBlockUpgradeMajority; }
     int RejectBlockOutdatedMajority() const { return nRejectBlockOutdatedMajority; }
     int ToCheckBlockUpgradeMajority() const { return nToCheckBlockUpgradeMajority; }
+    
+    unsigned int LiveFeedSwitchTime() const { return nLiveFeedSwitchTime; }
+    int PowSwitchHeight() const { return nPoWSwitchHeight; }
 
     /** Used if GenerateBitcoins is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
@@ -73,6 +76,7 @@ public:
     /** In the future use NetworkIDString() for RPC fields */
     bool TestnetToBeDeprecatedFieldRPC() const { return fTestnetToBeDeprecatedFieldRPC; }
     /** Return the BIP70 network string (main, test or regtest) */
+    CBaseChainParams::Network NetworkID() const { return networkID; }
     std::string NetworkIDString() const { return strNetworkID; }
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
@@ -91,6 +95,8 @@ protected:
     int nEnforceBlockUpgradeMajority;
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
+    unsigned int nLiveFeedSwitchTime;
+    int nPoWSwitchHeight;
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nMinerThreads;

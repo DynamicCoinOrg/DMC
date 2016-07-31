@@ -13,6 +13,11 @@
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 
+static const int32_t BLOCK_VERSION_0_1 = (0 << 16) | 1;
+static const int32_t BLOCK_VERSION_0_2 = (0 << 16) | 2;
+static const int32_t BLOCK_VERSION_0_3 = (0 << 16) | 3;
+static const int32_t BLOCK_VERSION_1_3 = (1 << 16) | 3;
+
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
  * requirements.  When they solve the proof-of-work, they broadcast the block
@@ -24,7 +29,10 @@ class CBlockHeader
 {
 public:
     // header
-    static const int32_t CURRENT_VERSION=3;
+    static const int16_t CURRENT_DMC_VERSION = 1;
+    static const int16_t CURRENT_BTC_VERSION = 3;
+    static const int32_t CURRENT_VERSION = (CURRENT_DMC_VERSION << 16) | CURRENT_BTC_VERSION;
+
     int32_t nVersion;
     uint256 hashPrevBlock;
     uint256 hashMerkleRoot;
@@ -64,8 +72,35 @@ public:
     {
         return (nBits == 0);
     }
+    
+    
+    int16_t GetBtcVersion() const
+    {
+        return nVersion & 65535;
+    }
+    
+    int16_t GetDmcVersion() const
+    {
+        return nVersion & (65535 << 16);
+    }
+    
+    int32_t SetBtcVersion(int16_t v)
+    {
+        int16_t high = GetDmcVersion();
+        nVersion = (high << 16) | v;
+        return nVersion;
+    }
+    
+    int32_t SetDmcVersion(int16_t v)
+    {
+        int16_t low = GetBtcVersion();
+        nVersion = (v << 16) | low;
+        return nVersion;
+    }
 
     uint256 GetHash() const;
+
+    uint256 GetPoW() const;
 
     int64_t GetBlockTime() const
     {

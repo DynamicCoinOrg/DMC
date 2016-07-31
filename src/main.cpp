@@ -20,13 +20,16 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "GrsApi.h"
 
 #include <sstream>
+#include <memory>
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace boost;
 using namespace std;
@@ -54,6 +57,8 @@ bool fTxIndex = false;
 bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 unsigned int nCoinCacheSize = 5000;
+
+CDmcSystem *pDmcSystem = NULL;
 
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */
@@ -1219,7 +1224,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetHash(), block.nBits))
+    if (!CheckProofOfWork(block.GetPoW(), block.nBits))
         return error("ReadBlockFromDisk : Errors in block header");
 
     return true;
@@ -1236,24 +1241,23 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
 
 CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 {
-    CAmount nSubsidy = 1024 * COIN;
+    CAmount nSubsidy = 1 * COIN;
+
+    if (Params().NetworkID() == CBaseChainParams::MAIN) {
+        const int kFullRewardZone       = 128000;
+        const int kFullReward           = 65535;
+        const int kDecreasingRewardZone = kFullRewardZone + 1 + kFullReward;
+
+        if (nHeight >= 0 && nHeight <= kFullRewardZone) {
+            nSubsidy = kFullReward * COIN;
+        } else if (nHeight > kFullRewardZone && nHeight < kDecreasingRewardZone) {
+            nSubsidy = (kDecreasingRewardZone - nHeight) * COIN;
+        }
+    } else {
+        nSubsidy = 1024 * COIN;
+    }
 
     return nSubsidy + nFees;
-}
-
-// get block reward from the block which was already verified
-CAmount GetBlockReward(const CBlockIndex& block)
-{
-    /* TODO: get coinbase tx output value*/
-    CAmount totalOut = 0;
-    /* TODO: get fee value for a block */
-    CAmount totalFees = 0;
-
-    // NOTE: this is the invariant and restriction we're introducing here
-    // You obviously can claim more (just like before), but now you can't claim less too.
-//    return totalOut - totalFees;
-    
-    return block.nReward;
 }
 
 bool IsInitialBlockDownload()
@@ -1707,7 +1711,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     unsigned int flags = fStrictPayToScriptHash ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE;
 
     // Start enforcing the DERSIG (BIP66) rules, for block.nVersion=3 blocks, when 75% of the network has upgraded:
-    if (block.nVersion >= 3 && CBlockIndex::IsSuperMajority(3, pindex->pprev, Params().EnforceBlockUpgradeMajority())) {
+    if (block.nVersion >= BLOCK_VERSION_0_3 && CBlockIndex::IsSuperMajority(BLOCK_VERSION_0_3, pindex->pprev, Params().EnforceBlockUpgradeMajority())) {
         flags |= SCRIPT_VERIFY_DERSIG;
     }
 
@@ -1770,11 +1774,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs-1), nTimeConnect * 0.000001);
 
-    if (block.vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
-        return state.DoS(100,
-                         error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)",
-                               block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
-                               REJECT_INVALID, "bad-cb-amount");
+
+    bool rewardOk = pDmcSystem->CheckBlockReward(block, nFees, state, pindex);
+    if (!rewardOk) {
+        return rewardOk;
+    }
+
+    pindex->nReward      = block.vtx[0].GetValueOut() - nFees;
+    pindex->nChainReward = (pindex->pprev ? pindex->pprev->nChainReward : 0) + pindex->nReward;
 
     if (!control.Wait())
         return state.DoS(100, false);
@@ -2287,6 +2294,7 @@ CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
 {
     // Check for duplicate
     uint256 hash = block.GetHash();
+    uint256 pow  = block.GetPoW();
     BlockMap::iterator it = mapBlockIndex.find(hash);
     if (it != mapBlockIndex.end())
         return it->second;
@@ -2300,6 +2308,7 @@ CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
     pindexNew->nSequenceId = 0;
     BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
     pindexNew->phashBlock = &((*mi).first);
+    pindexNew->pPowBlock = boost::make_shared<uint256>(pow);
     BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);
     if (miPrev != mapBlockIndex.end())
     {
@@ -2308,11 +2317,6 @@ CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
         pindexNew->BuildSkip();
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
-
-    // TODO(dmc): temporary workaround – remove later
-    // this should be done in a different place, because txs are needed to calculate block reward
-    pindexNew->nReward      = GetBlockValue(pindexNew->nHeight, 0);
-    pindexNew->nChainReward = (pindexNew->pprev ? pindexNew->pprev->nChainReward : 0) + GetBlockReward(*pindexNew);
 
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (pindexBestHeader == NULL || pindexBestHeader->nChainWork < pindexNew->nChainWork)
@@ -2451,7 +2455,7 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits))
+    if (fCheckPOW && !CheckProofOfWork(block.GetPoW(), block.nBits))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                          REJECT_INVALID, "high-hash");
 
@@ -2559,18 +2563,26 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (pcheckpoint && nHeight < pcheckpoint->nHeight)
         return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
-    // Reject block.nVersion=1 blocks when 95% (75% on testnet) of the network has upgraded:
-    if (block.nVersion < 2 && 
-        CBlockIndex::IsSuperMajority(2, pindexPrev, Params().RejectBlockOutdatedMajority()))
+    // Reject block.nVersion=0_1 blocks when 95% (75% on testnet) of the network has upgraded:
+    if (block.nVersion < BLOCK_VERSION_0_2 && 
+        CBlockIndex::IsSuperMajority(BLOCK_VERSION_0_2, pindexPrev, Params().RejectBlockOutdatedMajority()))
     {
-        return state.Invalid(error("%s : rejected nVersion=1 block", __func__),
+        return state.Invalid(error("%s : rejected nVersion=0_1 block", __func__),
                              REJECT_OBSOLETE, "bad-version");
     }
 
-    // Reject block.nVersion=2 blocks when 95% (75% on testnet) of the network has upgraded:
-    if (block.nVersion < 3 && CBlockIndex::IsSuperMajority(3, pindexPrev, Params().RejectBlockOutdatedMajority()))
+    // Reject block.nVersion=0_2 blocks when 95% (75% on testnet) of the network has upgraded:
+    if (block.nVersion < BLOCK_VERSION_0_3 && CBlockIndex::IsSuperMajority(BLOCK_VERSION_0_3, pindexPrev, Params().RejectBlockOutdatedMajority()))
     {
-        return state.Invalid(error("%s : rejected nVersion=2 block", __func__),
+        return state.Invalid(error("%s : rejected nVersion=0_2 block", __func__),
+                             REJECT_OBSOLETE, "bad-version");
+    }
+
+//    // Reject block.nVersion=0_3 blocks when 95% (75% on testnet) of the network has upgraded:
+//    if (block.nVersion < BLOCK_VERSION_1_3 && CBlockIndex::IsSuperMajority(BLOCK_VERSION_1_3, pindexPrev, Params().RejectBlockOutdatedMajority()))
+    if (block.nVersion < BLOCK_VERSION_1_3 && nHeight >= Params().PowSwitchHeight())
+    {
+        return state.Invalid(error("%s : rejected nVersion=0_3 block", __func__),
                              REJECT_OBSOLETE, "bad-version");
     }
 
@@ -2589,8 +2601,8 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
     // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
     // if 750 of the last 1,000 blocks are version 2 or greater (51/100 if testnet):
-    if (block.nVersion >= 2 && 
-        CBlockIndex::IsSuperMajority(2, pindexPrev, Params().EnforceBlockUpgradeMajority()))
+    if (block.nVersion >= BLOCK_VERSION_0_2 && 
+        CBlockIndex::IsSuperMajority(BLOCK_VERSION_0_2, pindexPrev, Params().EnforceBlockUpgradeMajority()))
     {
         CScript expect = CScript() << nHeight;
         if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
@@ -2909,11 +2921,6 @@ bool static LoadBlockIndexDB()
     {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
-        
-        // TODO(dmc): temporary workaround – remove later
-        // this should be done differently, because txs are needed to calculate block reward
-        pindex->nReward      = GetBlockValue(pindex->nHeight, 0);
-        pindex->nChainReward = (pindex->pprev ? pindex->pprev->nChainReward : 0) + GetBlockReward(*pindex);
 
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (pindex->pprev) {
@@ -2923,8 +2930,10 @@ bool static LoadBlockIndexDB()
                     pindex->nChainTx = 0;
                     mapBlocksUnlinked.insert(std::make_pair(pindex->pprev, pindex));
                 }
+                pindex->nChainReward = pindex->pprev->nChainReward + pindex->nReward;
             } else {
                 pindex->nChainTx = pindex->nTx;
+                pindex->nChainReward = pindex->nReward;
             }
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
