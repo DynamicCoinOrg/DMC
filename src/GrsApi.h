@@ -15,6 +15,7 @@ class CGrsApi
 {
 public:
     CGrsApi(const std::string& baseUrl);
+    virtual ~CGrsApi();
 
     // Price at the specified time
     CAmount GetPrice(unsigned int time);

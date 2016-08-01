@@ -18,7 +18,14 @@
 
 CGrsApi::CGrsApi(const std::string& baseUrl)
   : baseApiUrl(baseUrl)
-{}
+{
+    curlpp::initialize();
+}
+
+CGrsApi::~CGrsApi()
+{
+    curlpp::terminate();
+}
 
 
 CAmount CGrsApi::GetPrice(unsigned int time)
