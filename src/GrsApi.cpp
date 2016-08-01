@@ -15,6 +15,7 @@
 #include "json/json_spirit_value.h"
 #include "json/json_spirit_reader_template.h"
 
+#include <boost/thread.hpp>
 
 CGrsApi::CGrsApi(const std::string& baseUrl)
   : baseApiUrl(baseUrl)
