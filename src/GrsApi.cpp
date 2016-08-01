@@ -43,12 +43,15 @@ CAmount CGrsApi::GetPrice(unsigned int time)
     // get price from the live feed
     while (true) {  //TODO(dmc): !!!
         try {
+            boost::this_thread::interruption_point();
             unsigned int timestamp = 0; //TODO(dmc): must be 'time'
             CAmount price = GetGrsApiPrice(timestamp);
             LogPrintf("GRS price for timestamp: time = %d, price = %d\n", time, price);
             return price;
         } catch (const std::runtime_error& e) {
             error("Can't get GRS price for timestamp: %s\n", e.what());
+        } catch (boost::thread_interrupted) {
+            error("CGrsApi::GetPrice thread terminated\n");
         }
     }
 }
