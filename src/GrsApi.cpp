@@ -251,6 +251,7 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex)
 
 CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time)
 {
+    LogPrintf("CDmcSystem::GetBlockRewardForNewTip: time=%d\n", time);
     const CBlockIndex* tip = chainActive.Tip();
     
     if (!tip) {
@@ -264,7 +265,7 @@ CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time)
     if (tip->nTime > Params().LiveFeedSwitchTime()) {
         CAmount prevReward = tip->nReward;
         CAmount reward     = prevReward;
-        unsigned int price = GetPrice(tip->nTime);
+        unsigned int price = GetPrice(time);
         CAmount target     = GetTargetPrice(prevReward);
 
         if (price < target) {
