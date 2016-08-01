@@ -141,8 +141,6 @@ int CGrsApi::DoApiRequest(const std::string& url, std::ostringstream& oss) const
 {
     // std::clog << "GRS API url: " << url << std::endl;
 
-    curlpp::Cleanup myCleanup;
-
     curlpp::options::Url reqUrl(url);
     curlpp::Easy request;
     request.setOpt(reqUrl);
