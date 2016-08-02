@@ -172,7 +172,7 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
 {
     genesisReward = 65535 * COIN;
     minReward = 1 * COIN;
-    maxReward = 100000 * COIN;
+    maxReward = 1000000 * COIN;
     minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
 }
 
