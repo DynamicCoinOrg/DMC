@@ -432,6 +432,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 {
     RenameThread("dynamiccoin-loadblk");
 
+#ifdef ENABLE_EXTERNAL_BLOCKFILE_LOADING
     // -reindex
     if (fReindex) {
         CImportingNow imp;
@@ -480,6 +481,8 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
             LogPrintf("Warning: Could not open blocks file %s\n", path.string());
         }
     }
+
+#endif
 
     if (GetBoolArg("-stopafterblockimport", false)) {
         LogPrintf("Stopping after block import\n");

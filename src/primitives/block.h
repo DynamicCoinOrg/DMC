@@ -10,9 +10,6 @@
 #include "serialize.h"
 #include "uint256.h"
 
-/** The maximum allowed size for a serialized block, in bytes (network rule) */
-static const unsigned int MAX_BLOCK_SIZE = 1000000;
-
 static const int32_t BLOCK_VERSION_0_1 = (0 << 16) | 1;
 static const int32_t BLOCK_VERSION_0_2 = (0 << 16) | 2;
 static const int32_t BLOCK_VERSION_0_3 = (0 << 16) | 3;
