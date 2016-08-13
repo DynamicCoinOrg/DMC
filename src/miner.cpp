@@ -507,7 +507,7 @@ void static BitcoinMiner(CWallet *pwallet)
                     {
                         // Found a solution
                         pblock->nNonce = nNonce;
-                        assert(hash == pblock->GetHash());
+                        assert(hash == pblock->GetPoW());
 
                         SetThreadPriority(THREAD_PRIORITY_NORMAL);
                         LogPrintf("BitcoinMiner:\n");
