@@ -319,7 +319,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         // Compute final coinbase transaction.
         txNew.vout[0].nValue = pDmcSystem->GetBlockRewardForNewTip(pblock->nTime) + nFees;
-        txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+        txNew.vin[0].scriptSig = CScript() << nHeight;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
 
