@@ -1,8 +1,6 @@
 DIST_SUBDIRS = secp256k1
+AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
 
-AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS)
-AM_CXXFLAGS = $(HARDENED_CXXFLAGS)
-AM_CPPFLAGS = $(HARDENED_CPPFLAGS)
 
 if EMBEDDED_LEVELDB
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
@@ -16,7 +14,7 @@ $(LIBLEVELDB): $(LIBMEMENV)
 $(LIBLEVELDB) $(LIBMEMENV):
 	@echo "Building LevelDB ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
 	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(LEVELDB_TARGET_FLAGS) \
-          OPT="$(AM_CXXFLAGS) $(PIE_FLAGS) $(CXXFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS)"
+          OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
 CURLPP_CFLAGS=-DCURL_STATICLIB -DBUILDING_CURLPP -DCURLPP_STATICLIB -I$(srcdir)/curlpp/include -I$(srcdir)/curlpp/include/curlpp -I$(srcdir)/curlpp/include/curlpp/internal -I$(srcdir)/curlpp/include/utilspp -I$(srcdir)/curlpp/include/utilspp/functor -I$(srcdir)/curlpp/include/utilspp/singleton
@@ -183,8 +181,7 @@ curlpp_SOURCES = \
 
 
 # server: shared between dynamiccoind and dynamiccoin-qt
-libdynamiccoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
-libdynamiccoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdynamiccoin_server_a_CPPFLAGS = $(DYNAMICCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libdynamiccoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
@@ -217,8 +214,7 @@ libdynamiccoin_server_a_SOURCES = \
 
 # wallet: shared between dynamiccoind and dynamiccoin-qt, but only linked
 # when wallet enabled
-libdynamiccoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES)
-libdynamiccoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdynamiccoin_wallet_a_CPPFLAGS = $(DYNAMICCOIN_INCLUDES)
 libdynamiccoin_wallet_a_SOURCES = \
   db.cpp \
   crypter.cpp \
@@ -230,8 +226,7 @@ libdynamiccoin_wallet_a_SOURCES = \
   $(DYNAMICCOIN_CORE_H)
 
 # crypto primitives library
-crypto_libdynamiccoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_CONFIG_INCLUDES)
-crypto_libdynamiccoin_crypto_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+crypto_libdynamiccoin_crypto_a_CPPFLAGS = $(DYNAMICCOIN_CONFIG_INCLUDES)
 crypto_libdynamiccoin_crypto_a_SOURCES = \
   crypto/sha1.cpp \
   crypto/sha256.cpp \
@@ -258,8 +253,7 @@ univalue_libdynamiccoin_univalue_a_SOURCES = \
   univalue/univalue.h
 
 # common: shared between dynamiccoind, and dynamiccoin-qt and non-server tools
-libdynamiccoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES)
-libdynamiccoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdynamiccoin_common_a_CPPFLAGS = $(DYNAMICCOIN_INCLUDES)
 libdynamiccoin_common_a_SOURCES = \
   allocators.cpp \
   amount.cpp \
@@ -289,8 +283,7 @@ libdynamiccoin_common_a_SOURCES = \
 # util: shared between all executables.
 # This library *must* be included to make sure that the glibc
 # backward-compatibility objects and their sanity checks are linked.
-libdynamiccoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES)
-libdynamiccoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdynamiccoin_util_a_CPPFLAGS = $(DYNAMICCOIN_INCLUDES)
 libdynamiccoin_util_a_SOURCES = \
   compat/strnlen.cpp \
   compat/glibc_sanity.cpp \
@@ -313,8 +306,7 @@ libdynamiccoin_util_a_SOURCES += compat/glibcxx_compat.cpp
 endif
 
 # cli: shared between dynamiccoin-cli and dynamiccoin-qt
-libdynamiccoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES)
-libdynamiccoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdynamiccoin_cli_a_CPPFLAGS = $(DYNAMICCOIN_INCLUDES)
 libdynamiccoin_cli_a_SOURCES = \
   rpcclient.cpp \
   $(DYNAMICCOIN_CORE_H)
@@ -344,8 +336,7 @@ dynamiccoind_SOURCES += dynamiccoind-res.rc
 endif
 
 dynamiccoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(CURLPP_LIBS)
-dynamiccoind_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES)
-dynamiccoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+dynamiccoind_CPPFLAGS = $(DYNAMICCOIN_INCLUDES)
 dynamiccoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 # dynamiccoin-cli binary #
@@ -373,16 +364,13 @@ dynamiccoin_tx_LDADD = \
   $(CRYPTO_LIBS)
 
 dynamiccoin_tx_SOURCES = dynamiccoin-tx.cpp
-dynamiccoin_tx_CPPFLAGS = $(AM_CXXFLAGS) $(DYNAMICCOIN_INCLUDES)
-dynamiccoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+dynamiccoin_tx_CPPFLAGS = $(DYNAMICCOIN_INCLUDES)
 #
 dynamiccoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
 dynamiccoin_cli_SOURCES += dynamiccoin-cli-res.rc
 endif
-dynamiccoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(DYNAMICCOIN_INCLUDES)
-dynamiccoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 dynamiccoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if BUILD_DYNAMICCOIN_LIBS
@@ -409,10 +397,9 @@ if GLIBC_BACK_COMPAT
   libbitcoinconsensus_la_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
+libbitcoinconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
 libbitcoinconsensus_la_LIBADD = $(CRYPTO_LIBS)
-libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_DYNAMICCOIN_INTERNAL
-libbitcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libbitcoinconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_DYNAMICCOIN_INTERNAL
 if USE_LIBSECP256K1
 libbitcoinconsensus_la_LIBADD += secp256k1/libsecp256k1.la
 endif
@@ -436,7 +423,7 @@ clean-local:
 
 .mm.o:
 	$(AM_V_CXX) $(OBJCXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	  $(CPPFLAGS) $(AM_CXXFLAGS) $(QT_INCLUDES) $(AM_CXXFLAGS) $(PIE_FLAGS) $(CXXFLAGS) -c -o $@ $<
+	  $(CPPFLAGS) $(AM_CXXFLAGS) $(QT_INCLUDES) $(CXXFLAGS)  -c -o $@ $<
 
 %.pb.cc %.pb.h: %.proto
 	@test -f $(PROTOC)
