@@ -432,6 +432,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 {
     RenameThread("dynamiccoin-loadblk");
 
+#ifdef ENABLE_EXTERNAL_BLOCKFILE_LOADING
     // -reindex
     if (fReindex) {
         CImportingNow imp;
@@ -480,6 +481,8 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
             LogPrintf("Warning: Could not open blocks file %s\n", path.string());
         }
     }
+
+#endif
 
     if (GetBoolArg("-stopafterblockimport", false)) {
         LogPrintf("Stopping after block import\n");
@@ -566,10 +569,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     sa_hup.sa_flags = 0;
     sigaction(SIGHUP, &sa_hup, NULL);
 
-#if defined (__SVR4) && defined (__sun)
-    // ignore SIGPIPE on Solaris
     signal(SIGPIPE, SIG_IGN);
-#endif
 #endif
 
     // ********************************************************* Step 2: parameter interactions

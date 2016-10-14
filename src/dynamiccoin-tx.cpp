@@ -193,13 +193,10 @@ static void MutateTxAddInput(CMutableTransaction& tx, const string& strInput)
         throw runtime_error("invalid TX input txid");
     uint256 txid(strTxid);
 
-    static const unsigned int minTxOutSz = 9;
-    static const unsigned int maxVout = MAX_BLOCK_SIZE / minTxOutSz;
-
     // extract and validate vout
     string strVout = strInput.substr(pos + 1, string::npos);
     int vout = atoi(strVout);
-    if ((vout < 0) || (vout > (int)maxVout))
+    if (vout < 0)
         throw runtime_error("invalid TX input vout");
 
     // append to transaction input list

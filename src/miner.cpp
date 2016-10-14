@@ -116,7 +116,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     // Largest block you're willing to create:
     unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
     // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
-    nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SIZE-1000), nBlockMaxSize));
+    nBlockMaxSize = std::max((unsigned int)1000, nBlockMaxSize);
 
     // How much of the block should be dedicated to high-priority transactions,
     // included regardless of the fees they pay
@@ -242,8 +242,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             // Legacy limits on sigOps:
             unsigned int nTxSigOps = GetLegacySigOpCount(tx);
-            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
-                continue;
 
             // Skip free transactions if we're past the minimum block size:
             const uint256& hash = tx.GetHash();
@@ -269,8 +267,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             CAmount nTxFees = view.GetValueIn(tx)-tx.GetValueOut();
 
             nTxSigOps += GetP2SHSigOpCount(tx, view);
-            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
-                continue;
 
             // Note that flags: we don't want to set mempool/IsStandard()
             // policy here, but we still have to ensure that the block we
@@ -323,7 +319,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         // Compute final coinbase transaction.
         txNew.vout[0].nValue = pDmcSystem->GetBlockRewardForNewTip(pblock->nTime) + nFees;
-        txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+        txNew.vin[0].scriptSig = CScript() << nHeight;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
 
@@ -511,7 +507,7 @@ void static BitcoinMiner(CWallet *pwallet)
                     {
                         // Found a solution
                         pblock->nNonce = nNonce;
-                        assert(hash == pblock->GetHash());
+                        assert(hash == pblock->GetPoW());
 
                         SetThreadPriority(THREAD_PRIORITY_NORMAL);
                         LogPrintf("BitcoinMiner:\n");

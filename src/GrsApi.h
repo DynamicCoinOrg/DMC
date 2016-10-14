@@ -15,18 +15,19 @@ class CGrsApi
 {
 public:
     CGrsApi(const std::string& baseUrl);
+    virtual ~CGrsApi();
 
     // Price at the specified time
     CAmount GetPrice(unsigned int time);
     // Last known price broadcasted by GRS
-    CAmount GetLatestPrice() const;
+    CAmount GetLatestPrice();
 
 private:
 
   CAmount GetGrsApiPrice(unsigned int time = 0);
   CAmount DoApiPriceRequest(const std::string& reqName,
-                            const std::string& args) const;
-  int DoApiRequest(const std::string& url, std::ostringstream& oss) const;
+                            const std::string& args);
+  int DoApiRequest(const std::string& url, std::ostringstream& oss);
 
 
   typedef std::pair<unsigned int, unsigned int> time_interval_t;

@@ -15,10 +15,18 @@
 #include "json/json_spirit_value.h"
 #include "json/json_spirit_reader_template.h"
 
+#include <boost/thread.hpp>
 
 CGrsApi::CGrsApi(const std::string& baseUrl)
   : baseApiUrl(baseUrl)
-{}
+{
+    curlpp::initialize();
+}
+
+CGrsApi::~CGrsApi()
+{
+    curlpp::terminate();
+}
 
 
 CAmount CGrsApi::GetPrice(unsigned int time)
@@ -43,17 +51,21 @@ CAmount CGrsApi::GetPrice(unsigned int time)
     // get price from the live feed
     while (true) {  //TODO(dmc): !!!
         try {
+            boost::this_thread::interruption_point();
             unsigned int timestamp = 0; //TODO(dmc): must be 'time'
             CAmount price = GetGrsApiPrice(timestamp);
             LogPrintf("GRS price for timestamp: time = %d, price = %d\n", time, price);
             return price;
         } catch (const std::runtime_error& e) {
             error("Can't get GRS price for timestamp: %s\n", e.what());
+        } catch (const boost::thread_interrupted& e) {
+            LogPrintf("CGrsApi::GetPrice thread terminated\n");
+            throw;
         }
     }
 }
 
-CAmount CGrsApi::GetLatestPrice() const
+CAmount CGrsApi::GetLatestPrice()
 {
     return 10 * USCENT1;   // STUB: 0.1USD, TODO(dmc): get actual coin price
 }
@@ -69,7 +81,7 @@ CAmount CGrsApi::GetGrsApiPrice(unsigned int timestamp)
 }
 
 CAmount CGrsApi::DoApiPriceRequest(const std::string& reqName,
-                                   const std::string& args) const
+                                   const std::string& args)
 {
     CAmount price = 0;
     int apiResponseCode = 200;
@@ -137,14 +149,14 @@ CAmount CGrsApi::DoApiPriceRequest(const std::string& reqName,
     return price;
 }
 
-int CGrsApi::DoApiRequest(const std::string& url, std::ostringstream& oss) const
+int CGrsApi::DoApiRequest(const std::string& url, std::ostringstream& oss)
 {
+    LogPrintf("CGrsApi::DoApiRequest: url=%s, oss.str()=%s\n", url, oss.str());
     // std::clog << "GRS API url: " << url << std::endl;
-
-    curlpp::Cleanup myCleanup;
 
     curlpp::options::Url reqUrl(url);
     curlpp::Easy request;
+    request.setOpt(curlpp::options::NoSignal(false));
     request.setOpt(reqUrl);
 
     curlpp::options::WriteStream ws(&oss);
@@ -160,13 +172,13 @@ CDmcSystem::CDmcSystem(const std::string& apiUrl)
 {
     genesisReward = 65535 * COIN;
     minReward = 1 * COIN;
-    maxReward = 100000 * COIN;
+    maxReward = 1000000 * COIN;
     minTargetPrice = 1 * USD1 + 1 * USCENT1;    // 1.01USD
 }
 
 bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidationState& state, CBlockIndex* pindex)
 {
-    LogPrintf("CDmcSystem::CheckBlockReward: block.nTime=%d, fees=%d, hash=%s, height=%d, time=%d\n", block.nTime, nFees, pindex->GetBlockHash().ToString(), pindex->nHeight, pindex->nTime);
+    LogPrintf("CDmcSystem::CheckBlockReward: block.nTime=%d, fees=%d, hash=%s, height=%d, time=%d\n", block.nTime, nFees, pindex->phashBlock ? pindex->GetBlockHash().ToString() : "null", pindex->nHeight, pindex->nTime);
 
     CAmount blockOutput = block.vtx[0].GetValueOut();
     if (!blockOutput || blockOutput <= nFees) {
@@ -183,13 +195,13 @@ bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidatio
         // simplified reward checks
         CAmount prevReward = pindex->pprev ? pindex->pprev->nReward : genesisReward;
         CAmount rewDiff = std::abs(blockReward - prevReward);
-        if ((rewDiff == 0 || rewDiff == 1) &&
+        if ((rewDiff == 0 || rewDiff == 1 * COIN) &&
             (blockReward >= minReward && blockReward <= maxReward)) {
             return true;
         }
         return state.DoS(100,
                          error("CDmcSystem::CheckBlockReward() : coinbase pays wrong (actual=%d vs mustbe=%d)",
-                               block.vtx[0].GetValueOut(), GetBlockReward(pindex) + nFees),
+                               blockOutput, GetBlockReward(pindex) + nFees),
                                REJECT_INVALID, "bad-cb-amount");
     }
 
@@ -204,7 +216,7 @@ bool CDmcSystem::CheckBlockReward(const CBlock& block, CAmount nFees, CValidatio
 
 CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex)
 {
-    LogPrintf("CDmcSystem::GetBlockReward: hash=%s, height=%d, time=%d\n", pindex->GetBlockHash().ToString(), pindex->nHeight, pindex->nTime);
+    LogPrintf("CDmcSystem::GetBlockReward: hash=%s, height=%d, time=%d\n", pindex->phashBlock ? pindex->GetBlockHash().ToString() : "null", pindex->nHeight, pindex->nTime);
 
     CAmount nSubsidy = 1 * COIN;
 
@@ -243,8 +255,9 @@ CAmount CDmcSystem::GetBlockReward(const CBlockIndex* pindex)
 
 CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time)
 {
+    LogPrintf("CDmcSystem::GetBlockRewardForNewTip: time=%d\n", time);
     const CBlockIndex* tip = chainActive.Tip();
-    
+
     if (!tip) {
         return genesisReward;
     }
@@ -256,7 +269,7 @@ CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time)
     if (tip->nTime > Params().LiveFeedSwitchTime()) {
         CAmount prevReward = tip->nReward;
         CAmount reward     = prevReward;
-        unsigned int price = GetPrice(tip->nTime);
+        unsigned int price = GetPrice(time);
         CAmount target     = GetTargetPrice(prevReward);
 
         if (price < target) {
@@ -281,27 +294,32 @@ CAmount CDmcSystem::GetBlockRewardForNewTip(unsigned int time)
         }
     }
 
+    LogPrintf("CDmcSystem::GetBlockRewardForNewTip: time=%d, nSubsidy=%d\n", time, nSubsidy);
     return nSubsidy;
 }
 
 
 CAmount CDmcSystem::GetBlockReward() const
 {
+    LOCK(cs_main);
     return chainActive.Tip()->nReward;
 }
 
 CAmount CDmcSystem::GetPrice()
 {
+    LOCK(cs_main);
     return grsApi.GetPrice(chainActive.Tip()->nTime);
 }
 
 CAmount CDmcSystem::GetTargetPrice() const
 {
+    LOCK(cs_main);
     return GetTargetPrice(chainActive.Tip()->nReward);
 }
 
 CAmount CDmcSystem::GetTotalCoins() const
 {
+    LOCK(cs_main);
     return chainActive.Tip()->nChainReward;
 }
 
