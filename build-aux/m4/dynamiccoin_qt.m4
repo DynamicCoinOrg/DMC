@@ -159,43 +159,6 @@ AC_DEFUN([DYNAMICCOIN_QT_CONFIGURE],[
     fi
   fi
 
-  if test x$use_hardening != xno; then
-    DYNAMICCOIN_QT_CHECK([
-    AC_MSG_CHECKING(whether -fPIE can be used with this Qt config)
-    TEMP_CPPFLAGS=$CPPFLAGS
-    TEMP_CXXFLAGS=$CXXFLAGS
-    CPPFLAGS="$QT_INCLUDES $CPPFLAGS"
-    CXXFLAGS="$PIE_FLAGS $CXXFLAGS"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <QtCore/qconfig.h>]],
-      [[
-          #if defined(QT_REDUCE_RELOCATIONS)
-              choke;
-          #endif
-      ]])],
-      [ AC_MSG_RESULT(yes); QT_PIE_FLAGS=$PIE_FLAGS ],
-      [ AC_MSG_RESULT(no); QT_PIE_FLAGS=$PIC_FLAGS]
-    )
-    CPPFLAGS=$TEMP_CPPFLAGS
-    CXXFLAGS=$TEMP_CXXFLAGS
-    ])
-  else
-    DYNAMICCOIN_QT_CHECK([
-    AC_MSG_CHECKING(whether -fPIC is needed with this Qt config)
-    TEMP_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$QT_INCLUDES $CPPFLAGS"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <QtCore/qconfig.h>]],
-      [[
-          #if defined(QT_REDUCE_RELOCATIONS)
-              choke;
-          #endif
-      ]])],
-      [ AC_MSG_RESULT(no)],
-      [ AC_MSG_RESULT(yes); QT_PIE_FLAGS=$PIC_FLAGS]
-    )
-    CPPFLAGS=$TEMP_CPPFLAGS
-    ])
-  fi
-
   DYNAMICCOIN_QT_PATH_PROGS([MOC], [moc-qt${dynamiccoin_qt_got_major_vers} moc${dynamiccoin_qt_got_major_vers} moc], $qt_bin_path)
   DYNAMICCOIN_QT_PATH_PROGS([UIC], [uic-qt${dynamiccoin_qt_got_major_vers} uic${dynamiccoin_qt_got_major_vers} uic], $qt_bin_path)
   DYNAMICCOIN_QT_PATH_PROGS([RCC], [rcc-qt${dynamiccoin_qt_got_major_vers} rcc${dynamiccoin_qt_got_major_vers} rcc], $qt_bin_path)
@@ -241,7 +204,6 @@ AC_DEFUN([DYNAMICCOIN_QT_CONFIGURE],[
   ])
   AC_MSG_RESULT([$dynamiccoin_enable_qt (Qt${dynamiccoin_qt_got_major_vers})])
 
-  AC_SUBST(QT_PIE_FLAGS)
   AC_SUBST(QT_INCLUDES)
   AC_SUBST(QT_LIBS)
   AC_SUBST(QT_LDFLAGS)
