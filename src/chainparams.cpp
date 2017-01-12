@@ -142,22 +142,6 @@ public:
         vFixedSeeds.clear(); //! No seeds for now
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("dynamiccoin.net", "main.seeds.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns1.dynamiccoin.net", "ns1.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns2.dynamiccoin.net", "ns2.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns3.dynamiccoin.net", "ns3.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns4.dynamiccoin.net", "ns4.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns5.dynamiccoin.net", "ns5.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns6.dynamiccoin.net", "ns6.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns7.dynamiccoin.net", "ns7.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns8.dynamiccoin.net", "ns8.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns9.dynamiccoin.net", "ns9.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns10.dynamiccoin.net", "ns10.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns11.dynamiccoin.net", "ns11.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns12.dynamiccoin.net", "ns12.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns13.dynamiccoin.net", "ns13.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns14.dynamiccoin.net", "ns14.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns15.dynamiccoin.net", "ns15.dynamiccoin.net"));
-        vSeeds.push_back(CDNSSeedData("ns16.dynamiccoin.net", "ns16.dynamiccoin.net"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(0);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
